@@ -13,7 +13,7 @@ class Memo(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
-    val writerId: Member,
+    val writer: Member,
 
     var title: String,
     @Lob

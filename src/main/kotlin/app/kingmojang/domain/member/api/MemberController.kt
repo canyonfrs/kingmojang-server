@@ -2,7 +2,6 @@ package app.kingmojang.domain.member.api
 
 import app.kingmojang.domain.member.application.MemberService
 import app.kingmojang.global.common.response.CommonResponse
-import app.kingmojang.global.common.response.ResponseStatus
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -32,7 +31,7 @@ class MemberController(
     }
 
     private fun existsResult(isExists: Boolean) = if (isExists) {
-        ResponseEntity.status(HttpStatus.CONFLICT).body(CommonResponse.of(ResponseStatus.SUCCESS))
+        ResponseEntity.status(HttpStatus.CONFLICT).body(CommonResponse.success())
     } else {
         ResponseEntity.noContent().build()
     }

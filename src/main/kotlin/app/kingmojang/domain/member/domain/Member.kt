@@ -1,5 +1,6 @@
 package app.kingmojang.domain.member.domain
 
+import app.kingmojang.domain.member.dto.request.SignupRequest
 import jakarta.persistence.*
 import java.time.LocalDateTime
 
@@ -29,6 +30,9 @@ class Member(
     val email: String,
     val isAuthorizedAccount: Boolean,
 
+    @Column(name = "profile_image")
+    var profileImage: String,
+
     @Embedded
     var information: CreatorInformation,
 
@@ -38,6 +42,26 @@ class Member(
     @Column(name = "created_at", nullable = false, updatable = false)
     val createdAt: LocalDateTime,
 ) {
+    companion object {
+        fun create(request: SignupRequest): Member {
+            return Member(
+                username = request.username,
+                nickname = request.nickname,
+                password = request.password,
+                email = request.email,
+                information = CreatorInformation(
+                    request.introduce,
+                    request.youtube,
+                    request.broadcastLink,
+                    request.donationLink
+                ),
+                memberType = request.memberType,
+                isAuthorizedAccount = request.memberType == MemberType.CREATOR,
+                profileImage = "",
+                createdAt = LocalDateTime.now()
+            )
+        }
+    }
 }
 
 @Embeddable

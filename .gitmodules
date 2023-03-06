@@ -1,0 +1,4 @@
+[submodule "server-security"]
+	path = server-security
+	url = https://github.com/kingmojang/server-security.git
+	branch = main

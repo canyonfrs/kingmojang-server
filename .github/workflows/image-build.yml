@@ -3,8 +3,6 @@ name: CI for develop branch
 on:
   pull_request:
     branches: [ "develop" ]
-  push:
-    branches: [ "feature/ci" ]
 
 jobs:
   ci:

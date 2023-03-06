@@ -27,8 +27,17 @@ class CommonExceptionHandler {
         )
     }
 
+//    @ExceptionHandler(RuntimeException::class)
+//    fun onRuntimeException(e: RuntimeException): ResponseEntity<CommonResponse<ExceptionBody>> {
+//        e.printStackTrace()
+//        return postProcessError(
+//            CommonException(ErrorCodes.UNHANDLED_EXCEPTION, DEFAULT_ERROR_MESSAGE, e)
+//        )
+//    }
+
     @ExceptionHandler(Exception::class)
     fun onException(e: Exception): ResponseEntity<CommonResponse<ExceptionBody>> {
+        e.printStackTrace()
         return postProcessError(
             CommonException(ErrorCodes.UNHANDLED_EXCEPTION, DEFAULT_ERROR_MESSAGE, e)
         )

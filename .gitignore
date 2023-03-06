@@ -42,4 +42,6 @@ docker-compose-local.yml
 db/
 
 ### application configuration yml
-application-local.yml
+application-datasource.yml
+application-security.yml
+application-test.yml

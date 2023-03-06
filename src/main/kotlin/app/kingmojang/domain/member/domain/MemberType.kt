@@ -1,7 +1,11 @@
 package app.kingmojang.domain.member.domain
 
-enum class MemberType(val type: String) {
-    ROLE_USER("user"), ROLE_CREATOR("creator"), ROLE_ADMIN("admin"),
+enum class MemberType(val value: String) {
+    USER("ROLE_USER"), CREATOR("ROLE_CREATOR"), ADMIN("ROLE_ADMIN");
 
-    fun 
+    companion object {
+        fun isValidate(type: String): Boolean {
+            return (MemberType.values().find { it.name == type } != null)
+        }
+    }
 }

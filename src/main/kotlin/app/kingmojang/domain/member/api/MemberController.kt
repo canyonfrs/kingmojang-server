@@ -21,8 +21,11 @@ class MemberController(
     }
 
     @GetMapping("/nickname")
-    fun existsNickname(@RequestParam(defaultValue = "") nickname: String): ResponseEntity<CommonResponse<Void>> {
-        return existsResult(memberService.existsNickname(nickname))
+    fun existsNickname(
+        @RequestParam(defaultValue = "") nickname: String,
+        @RequestParam(defaultValue = "USER") type: String,
+    ): ResponseEntity<CommonResponse<Void>> {
+        return existsResult(memberService.existsNickname(nickname, type))
     }
 
     @GetMapping("/email")

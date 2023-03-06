@@ -3,6 +3,7 @@ package app.kingmojang.domain.member.domain
 import app.kingmojang.domain.member.dto.request.SignupRequest
 import jakarta.persistence.*
 import java.time.LocalDateTime
+import java.util.*
 
 @Entity
 @Table(
@@ -36,11 +37,19 @@ class Member(
     @Embedded
     var information: CreatorInformation,
 
+    @Embedded
+    var refreshToken: RefreshToken,
+
     @Enumerated(EnumType.STRING)
-    val memberType: MemberType,
+    val type: MemberType,
 
     @Column(name = "created_at", nullable = false, updatable = false)
     val createdAt: LocalDateTime,
+
+    @Column(name = "deleted_at")
+    var deletedAt: LocalDateTime? = null,
+
+    var deleted: Boolean = false,
 ) {
     companion object {
         fun create(request: SignupRequest): Member {
@@ -55,12 +64,18 @@ class Member(
                     request.broadcastLink,
                     request.donationLink
                 ),
-                memberType = request.memberType,
-                isAuthorizedAccount = request.memberType == MemberType.CREATOR,
+                type = MemberType.valueOf(request.memberType),
+                isAuthorizedAccount = request.isAuthorizedAccount,
                 profileImage = "",
-                createdAt = LocalDateTime.now()
+                createdAt = LocalDateTime.now(),
+                refreshToken = RefreshToken("", LocalDateTime.now())
             )
         }
+    }
+
+    fun generateToken(): String {
+        refreshToken = RefreshToken.create()
+        return refreshToken.value
     }
 }
 
@@ -79,4 +94,26 @@ data class CreatorInformation(
     @Column(name = "donation_link")
     val donationLink: String?,
 ) {
+}
+
+@Embeddable
+data class RefreshToken(
+    @Column(name = "refresh_token")
+    val value: String,
+
+    @Column(name = "token_expired_date")
+    val expiredDate: LocalDateTime,
+) {
+    companion object {
+        fun create(): RefreshToken {
+            return RefreshToken(
+                value = UUID.randomUUID().toString(),
+                expiredDate = LocalDateTime.now().plusYears(1)
+            )
+        }
+    }
+
+    fun isValid(refreshToken: String): Boolean {
+        return refreshToken == value && expiredDate.isAfter(LocalDateTime.now())
+    }
 }

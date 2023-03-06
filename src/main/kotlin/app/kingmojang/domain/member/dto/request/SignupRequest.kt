@@ -1,6 +1,5 @@
 package app.kingmojang.domain.member.dto.request
 
-import app.kingmojang.domain.member.domain.MemberType
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
@@ -15,6 +14,6 @@ data class SignupRequest(
     val youtube: String?,
     val broadcastLink: String?,
     val donationLink: String?,
-    @field:NotNull val memberType: MemberType,
+    @field:NotBlank val memberType: String,
 ) {
 }

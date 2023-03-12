@@ -8,6 +8,7 @@ enum class ErrorCodes(val status: HttpStatus, val description: String) {
     DUPLICATE_USERNAME(HttpStatus.CONFLICT, ""),
     INVALID_INPUT(HttpStatus.BAD_REQUEST, ""),
     NOT_FOUND_USERNAME(HttpStatus.NOT_FOUND, ""),
+    NOT_FOUND_MEMO(HttpStatus.NOT_FOUND, ""),
     UNHANDLED_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR, ""),
     INVALID_JWT_TOKEN(HttpStatus.UNAUTHORIZED, "잘못된 토큰입니다."),
     INVALID_JWT_SIGNATURE(HttpStatus.UNAUTHORIZED, "토큰의 시그니처가 잘못되었습니다."),

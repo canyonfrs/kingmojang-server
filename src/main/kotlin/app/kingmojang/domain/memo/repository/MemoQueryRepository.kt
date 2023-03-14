@@ -21,7 +21,7 @@ class MemoQueryRepository(
         return queryFactory
             .select(createQMemoDto())
             .from(memo)
-            .join(memo.writer, member).fetchJoin()
+            .join(memo.writer, member)
             .where(
                 builder.and(memo.writer.username.eq(username))
             )
@@ -34,7 +34,7 @@ class MemoQueryRepository(
         return queryFactory
             .select(createQMemoDto())
             .from(memo)
-            .join(memo.writer, member).fetchJoin()
+            .join(memo.writer, member)
             .orderBy(memo.updatedAt.desc())
             .limit(size.toLong())
             .fetch()
@@ -44,7 +44,7 @@ class MemoQueryRepository(
         return queryFactory
             .select(createQMemoDto())
             .from(memo)
-            .join(memo.writer, member).fetchJoin()
+            .join(memo.writer, member)
             .where(memo.id.eq(id))
             .fetchOne()
     }

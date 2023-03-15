@@ -4,6 +4,7 @@ import app.kingmojang.domain.memo.application.MemoService
 import app.kingmojang.domain.memo.dto.request.MemoRequest
 import app.kingmojang.domain.memo.dto.response.MemoResponse
 import app.kingmojang.domain.memo.dto.response.MemosResponse
+import app.kingmojang.global.common.request.CommonPageRequest
 import app.kingmojang.global.common.response.CommonResponse
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
@@ -46,8 +47,13 @@ class MemoController(
     }
 
     @GetMapping("/{id}")
-    fun readMemo(@PathVariable id: Long): ResponseEntity<CommonResponse<MemoResponse>> {
-        val memo = memoService.readMemo(id)
+    fun readMemo(
+        @PathVariable id: Long,
+        @RequestParam(defaultValue = "10") size: Long,
+        @RequestParam(defaultValue = "0") page: Long,
+    ): ResponseEntity<CommonResponse<MemoResponse>> {
+        val request = CommonPageRequest(size, page)
+        val memo = memoService.readMemo(id, request)
         return ResponseEntity.ok(CommonResponse.success(memo))
     }
 

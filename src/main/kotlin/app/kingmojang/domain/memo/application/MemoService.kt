@@ -1,5 +1,7 @@
 package app.kingmojang.domain.memo.application
 
+import app.kingmojang.domain.comment.dto.response.CommentsResponse
+import app.kingmojang.domain.comment.repository.CommentQueryRepository
 import app.kingmojang.domain.member.exception.NotFoundUsernameException
 import app.kingmojang.domain.member.repository.MemberRepository
 import app.kingmojang.domain.memo.domain.Memo
@@ -9,6 +11,7 @@ import app.kingmojang.domain.memo.dto.response.MemosResponse
 import app.kingmojang.domain.memo.exception.NotFoundMemoException
 import app.kingmojang.domain.memo.repository.MemoQueryRepository
 import app.kingmojang.domain.memo.repository.MemoRepository
+import app.kingmojang.global.common.request.CommonPageRequest
 import app.kingmojang.global.common.request.NoOffsetPageRequest
 import app.kingmojang.global.exception.CommonException
 import app.kingmojang.global.exception.ErrorCodes.*
@@ -21,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional
 class MemoService(
     private val memoRepository: MemoRepository,
     private val memoQueryRepository: MemoQueryRepository,
+    private val commentQueryRepository: CommentQueryRepository,
     private val memberRepository: MemberRepository,
 ) {
 
@@ -46,9 +50,10 @@ class MemoService(
     }
 
     @Transactional(readOnly = true)
-    fun readMemo(id: Long): MemoResponse {
+    fun readMemo(id: Long, request: CommonPageRequest): MemoResponse {
         val memo = memoQueryRepository.findByIdOrNull(id) ?: throw NotFoundMemoException(id)
-        return MemoResponse.of(memo)
+        val commentsResponse = CommentsResponse.of(commentQueryRepository.readCommentsInMemo(id, request))
+        return MemoResponse.of(memo, commentsResponse)
     }
 
     @Transactional(readOnly = true)

@@ -1,5 +1,6 @@
 package app.kingmojang.domain.memo.dto.response
 
+import app.kingmojang.domain.comment.dto.response.CommentsResponse
 import app.kingmojang.domain.memo.domain.Memo
 import java.time.LocalDateTime
 
@@ -15,9 +16,10 @@ data class MemoResponse(
     val fontName: String,
     val fontStyle: String,
     val fontSize: Int,
+    val commentsResponse: CommentsResponse
 ) {
     companion object {
-        fun of(memo: MemoDto): MemoResponse {
+        fun of(memo: MemoDto, commentsResponse: CommentsResponse): MemoResponse {
             return MemoResponse(
                 id = memo.id,
                 title = memo.title,
@@ -30,10 +32,11 @@ data class MemoResponse(
                 fontName = memo.fontName,
                 fontStyle = memo.fontStyle,
                 fontSize = memo.fontSize,
+                commentsResponse = commentsResponse
             )
         }
 
-        fun of(memo: Memo): MemoResponse {
+        fun of(memo: Memo, commentsResponse: CommentsResponse): MemoResponse {
             return MemoResponse(
                 id = memo.id!!,
                 title = memo.title,
@@ -46,6 +49,7 @@ data class MemoResponse(
                 fontName = memo.font.name,
                 fontStyle = memo.font.style,
                 fontSize = memo.font.size,
+                commentsResponse = commentsResponse
             )
         }
     }

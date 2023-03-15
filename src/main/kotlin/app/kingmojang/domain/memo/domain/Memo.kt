@@ -56,6 +56,14 @@ class Memo(
         this.updatedAt = LocalDateTime.now()
         return this
     }
+
+    fun increaseCommentCount() {
+        this.commentCount++
+    }
+
+    fun decreaseCommentCount() {
+        this.commentCount--
+    }
 }
 
 @Embeddable

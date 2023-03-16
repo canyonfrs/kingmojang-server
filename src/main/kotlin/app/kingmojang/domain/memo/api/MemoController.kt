@@ -48,12 +48,16 @@ class MemoController(
 
     @GetMapping("/{id}")
     fun readMemo(
+        @AuthenticationPrincipal userDetails: UserDetails?,
         @PathVariable id: Long,
         @RequestParam(defaultValue = "10") size: Long,
         @RequestParam(defaultValue = "0") page: Long,
     ): ResponseEntity<CommonResponse<MemoResponse>> {
         val request = CommonPageRequest(size, page)
-        val memo = memoService.readMemo(id, request)
+        val memo =
+            if (userDetails == null) memoService.readMemo(id, request)
+            else memoService.readMemoWithUsername(userDetails, id, request)
+
         return ResponseEntity.ok(CommonResponse.success(memo))
     }
 

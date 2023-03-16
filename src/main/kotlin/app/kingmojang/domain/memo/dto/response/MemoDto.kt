@@ -10,6 +10,7 @@ data class MemoDto @QueryProjection constructor(
     val content: String,
     val likeCount: Int,
     val commentCount: Int,
+    val isLike: Boolean,
     val createdAt: LocalDateTime,
     val updatedAt: LocalDateTime,
     val fontName: String,

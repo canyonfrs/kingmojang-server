@@ -64,6 +64,14 @@ class Memo(
     fun decreaseCommentCount() {
         this.commentCount--
     }
+
+    fun increaseMemoLikeCount() {
+        this.likeCount++
+    }
+
+    fun decreaseMemoLikeCount() {
+        this.likeCount--
+    }
 }
 
 @Embeddable

@@ -56,13 +56,13 @@ class Comment(
         return this
     }
 
-    fun increaseReplyCount() {
-        this.replyCount++
-    }
+    fun increaseReplyCount() = this.replyCount++
 
-    fun decreaseReplyCount() {
-        this.replyCount--
-    }
+    fun decreaseReplyCount() = this.replyCount--
+
+    fun increaseLikeCount() = this.likeCount++
+
+    fun decreaseLikeCount() = this.likeCount--
 
     fun remove() {
         this.memo.decreaseCommentCount()

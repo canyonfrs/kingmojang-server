@@ -53,6 +53,10 @@ class Reply(
         }
     }
 
+    fun increaseLikeCount() = this.likeCount++
+
+    fun decreaseLikeCount() = this.likeCount--
+
     fun update(request: ReplyRequest): Reply {
         this.content = request.content
         this.updatedAt = LocalDateTime.now()

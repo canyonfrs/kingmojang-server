@@ -1,15 +1,15 @@
 package app.kingmojang.domain.like.domain
 
-import app.kingmojang.domain.comment.domain.Comment
+import app.kingmojang.domain.comment.domain.Reply
 import app.kingmojang.domain.member.domain.Member
 import jakarta.persistence.*
 import java.time.LocalDateTime
 
 @Entity
-class CommentLike(
+class ReplyLike(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "comment_like_id")
+    @Column(name = "reply_like_id")
     val id: Long? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -17,23 +17,23 @@ class CommentLike(
     val member: Member,
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "comment_id")
-    val comment: Comment,
+    @JoinColumn(name = "reply_id")
+    val reply: Reply,
 
     @Column(name = "created_at", nullable = false, updatable = false)
     val createdAt: LocalDateTime,
 ) {
     companion object {
-        fun create(member: Member, comment: Comment): CommentLike {
-            return CommentLike(
+        fun create(member: Member, reply: Reply): ReplyLike {
+            return ReplyLike(
                 member = member,
-                comment = comment,
+                reply = reply,
                 createdAt = LocalDateTime.now()
             )
         }
     }
 
     fun remove() {
-        this.comment.decreaseLikeCount()
+        this.reply.decreaseLikeCount()
     }
 }

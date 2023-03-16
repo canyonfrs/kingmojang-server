@@ -23,4 +23,18 @@ class MemoLike(
     @Column(name = "created_at", nullable = false, updatable = false)
     val createdAt: LocalDateTime,
 ) {
+    companion object {
+        fun create(member: Member, memo: Memo): MemoLike {
+            memo.increaseMemoLikeCount()
+            return MemoLike(
+                member = member,
+                memo = memo,
+                createdAt = LocalDateTime.now()
+            )
+        }
+    }
+
+    fun remove() {
+        this.memo.decreaseCommentCount()
+    }
 }

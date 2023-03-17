@@ -17,6 +17,7 @@ data class CommentResponse(
     val content: String,
     val likeCount: Int = 0,
     val replyCount: Int = 0,
+    val isLike: Boolean = false,
     val createdAt: LocalDateTime,
     val updatedAt: LocalDateTime,
     val replies: MutableList<ReplyResponse>,
@@ -42,6 +43,20 @@ data class CommentResponse(
                 content = "",
                 createdAt = LocalDateTime.now(),
                 updatedAt = LocalDateTime.now(),
+                replies = mutableListOf()
+            )
+        }
+
+        fun of(comment: Comment, isLike: Boolean): CommentResponse {
+            return CommentResponse(
+                commentId = comment.id!!,
+                writer = comment.writer.nickname,
+                content = comment.content,
+                likeCount = comment.likeCount,
+                replyCount = comment.replyCount,
+                isLike = isLike,
+                createdAt = comment.createdAt,
+                updatedAt = comment.updatedAt,
                 replies = mutableListOf()
             )
         }

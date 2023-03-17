@@ -8,6 +8,7 @@ data class ReplyResponse(
     val writer: String,
     val content: String,
     val likeCount: Int,
+    val isLike: Boolean = false,
     val createdAt: LocalDateTime,
     val updatedAt: LocalDateTime,
 ) {
@@ -18,6 +19,18 @@ data class ReplyResponse(
                 writer = r.writer.nickname,
                 content = r.content,
                 likeCount = r.likeCount,
+                createdAt = r.createdAt,
+                updatedAt = r.updatedAt
+            )
+        }
+
+        fun of(r: Reply, isLike: Boolean): ReplyResponse {
+            return ReplyResponse(
+                id = r.id!!,
+                writer = r.writer.nickname,
+                content = r.content,
+                likeCount = r.likeCount,
+                isLike = isLike,
                 createdAt = r.createdAt,
                 updatedAt = r.updatedAt
             )

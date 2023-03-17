@@ -25,7 +25,7 @@ class MemoLike(
 ) {
     companion object {
         fun create(member: Member, memo: Memo): MemoLike {
-            memo.increaseMemoLikeCount()
+            memo.increaseLikeCount()
             return MemoLike(
                 member = member,
                 memo = memo,
@@ -35,6 +35,6 @@ class MemoLike(
     }
 
     fun remove() {
-        this.memo.decreaseCommentCount()
+        this.memo.decreaseLikeCount()
     }
 }

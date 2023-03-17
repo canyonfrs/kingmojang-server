@@ -25,6 +25,7 @@ class ReplyLike(
 ) {
     companion object {
         fun create(member: Member, reply: Reply): ReplyLike {
+            reply.increaseLikeCount()
             return ReplyLike(
                 member = member,
                 reply = reply,

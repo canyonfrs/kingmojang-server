@@ -65,11 +65,11 @@ class Memo(
         this.commentCount--
     }
 
-    fun increaseMemoLikeCount() {
+    fun increaseLikeCount() {
         this.likeCount++
     }
 
-    fun decreaseMemoLikeCount() {
+    fun decreaseLikeCount() {
         this.likeCount--
     }
 }

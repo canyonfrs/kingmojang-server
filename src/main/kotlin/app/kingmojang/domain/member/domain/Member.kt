@@ -34,6 +34,9 @@ class Member(
     @Column(name = "profile_image")
     var profileImage: String,
 
+    @Column(name = "follower_count")
+    var followerCount: Int = 0,
+
     @Embedded
     var information: CreatorInformation,
 
@@ -77,6 +80,10 @@ class Member(
         refreshToken = RefreshToken.create()
         return refreshToken.value
     }
+
+    fun increaseFollowerCount() = this.followerCount++
+
+    fun decreaseFollowerCount() = this.followerCount--
 }
 
 @Embeddable

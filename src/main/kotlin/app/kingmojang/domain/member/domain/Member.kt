@@ -43,6 +43,9 @@ class Member(
     @Embedded
     var refreshToken: RefreshToken,
 
+    @Enumerated
+    val provider: AuthProvider,
+
     @Enumerated(EnumType.STRING)
     val type: MemberType,
 
@@ -67,6 +70,7 @@ class Member(
                     request.broadcastLink,
                     request.donationLink
                 ),
+                provider = AuthProvider.valueOf(request.provider),
                 type = MemberType.valueOf(request.memberType),
                 isAuthorizedAccount = request.isAuthorizedAccount,
                 profileImage = "",

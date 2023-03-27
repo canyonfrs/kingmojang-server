@@ -12,14 +12,15 @@ import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
 
 @Component
-class JwtExceptionFilter : OncePerRequestFilter() {
+class JwtExceptionFilter(
+    private val objectMapper: ObjectMapper
+) : OncePerRequestFilter() {
 
     override fun doFilterInternal(
         request: HttpServletRequest,
         response: HttpServletResponse,
         filterChain: FilterChain,
     ) {
-        val objectMapper = ObjectMapper()
         try {
             filterChain.doFilter(request, response)
         } catch (e: CommonException) {

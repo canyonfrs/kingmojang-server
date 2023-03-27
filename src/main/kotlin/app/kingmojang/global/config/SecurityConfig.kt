@@ -1,7 +1,12 @@
 package app.kingmojang.global.config
 
+import app.kingmojang.global.property.CorsProperty
 import app.kingmojang.global.security.JwtAuthFilter
 import app.kingmojang.global.security.JwtExceptionFilter
+import app.kingmojang.global.security.oauth2.CustomOAuth2UserService
+import app.kingmojang.global.security.oauth2.HttpCookieOAuth2AuthorizationRequestRepository
+import app.kingmojang.global.security.oauth2.OAuth2AuthenticationFailureHandler
+import app.kingmojang.global.security.oauth2.OAuth2AuthenticationSuccessHandler
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationProvider
@@ -22,6 +27,11 @@ class SecurityConfig(
     private val jwtAuthFilter: JwtAuthFilter,
     private val jwtExceptionFilter: JwtExceptionFilter,
     private val authenticationProvider: AuthenticationProvider,
+    private val httpCookieOAuth2AuthorizationRequestRepository: HttpCookieOAuth2AuthorizationRequestRepository,
+    private val customOAuth2UserService: CustomOAuth2UserService,
+    private val oAuth2AuthenticationSuccessHandler: OAuth2AuthenticationSuccessHandler,
+    private val oAuth2AuthenticationFailureHandler: OAuth2AuthenticationFailureHandler,
+    private val corsProperty: CorsProperty,
 ) {
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
@@ -34,7 +44,24 @@ class SecurityConfig(
         }
         http.authorizeHttpRequests {
             it.requestMatchers("/api/v1/**").permitAll()
+                .requestMatchers("/oauth2/**").permitAll()
                 .anyRequest().authenticated()
+        }
+        http {
+            oauth2Login {
+                authorizationEndpoint {
+                    baseUri = "/oauth2/authorize"
+                    authorizationRequestRepository = httpCookieOAuth2AuthorizationRequestRepository
+                }
+                redirectionEndpoint {
+                    baseUri = "/*/oauth2/code/*"
+                }
+                userInfoEndpoint {
+                    userService = customOAuth2UserService
+                }
+                authenticationSuccessHandler = oAuth2AuthenticationSuccessHandler
+                authenticationFailureHandler = oAuth2AuthenticationFailureHandler
+            }
         }
         http.authenticationProvider(authenticationProvider)
         http.addFilter(CorsFilter(corsConfigurationSource()))
@@ -46,9 +73,8 @@ class SecurityConfig(
 
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
-        // TODO update details settings
         val configuration = CorsConfiguration()
-        configuration.allowedOrigins = listOf("*")
+        configuration.allowedOrigins = corsProperty.allowedOrigins
         configuration.allowedMethods = listOf("*")
         configuration.allowedHeaders = listOf("*")
         val source = UrlBasedCorsConfigurationSource()

@@ -10,6 +10,7 @@ data class SignupRequest(
     @field:NotBlank val nickname: String,
     @field:Email val email: String,
     @field:NotNull val isAuthorizedAccount: Boolean,
+    @field:NotBlank val provider: String,
     val introduce: String?,
     val youtube: String?,
     val broadcastLink: String?,

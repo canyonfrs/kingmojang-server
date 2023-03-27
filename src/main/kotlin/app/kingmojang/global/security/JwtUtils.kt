@@ -1,13 +1,13 @@
 package app.kingmojang.global.security
 
+import app.kingmojang.domain.member.domain.UserPrincipal
 import app.kingmojang.global.exception.CommonException
 import app.kingmojang.global.exception.ErrorCodes
+import app.kingmojang.global.property.AuthProperty
 import io.jsonwebtoken.*
 import io.jsonwebtoken.io.Decoders
 import io.jsonwebtoken.security.Keys
 import io.jsonwebtoken.security.SignatureException
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Component
 import java.util.*
 import java.util.function.Function
@@ -15,12 +15,11 @@ import javax.crypto.SecretKey
 
 @Component
 class JwtUtils(
-    @Value("\${jwt.secret-key}")
-    val secret: String,
-    @Value("\${jwt.exp-time}")
-    val tokenExpTime: Long,
+    authProperty: AuthProperty,
 ) {
-    val key: SecretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret))
+    private val secret = authProperty.secretKey
+    private val tokenExpTime = authProperty.expTime
+    private val key: SecretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret))
 
     fun extractUsername(token: String): String {
         return extractClaim(token, Claims::getSubject)
@@ -31,17 +30,17 @@ class JwtUtils(
         return claimsResolver.apply(claims)
     }
 
-    fun generateToken(userDetails: UserDetails): String {
-        return generateToken(mutableMapOf(), userDetails)
+    fun generateToken(userPrincipal: UserPrincipal): String {
+        return generateToken(mutableMapOf(), userPrincipal)
     }
 
-    fun generateToken(extraClaims: MutableMap<String, Any?>, userDetails: UserDetails): String {
+    fun generateToken(extraClaims: MutableMap<String, Any?>, userPrincipal: UserPrincipal): String {
         val currentTime = System.currentTimeMillis()
         return Jwts.builder()
             .setClaims(extraClaims)
-            .setSubject(userDetails.username)
+            .setSubject(userPrincipal.username)
             .setIssuedAt(Date(currentTime))
-            .setExpiration(Date(currentTime + tokenExpTime.toLong()))
+            .setExpiration(Date(currentTime + tokenExpTime))
             .signWith(key, SignatureAlgorithm.HS512)
             .compact()
     }

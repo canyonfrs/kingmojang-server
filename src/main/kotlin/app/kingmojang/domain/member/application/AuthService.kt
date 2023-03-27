@@ -2,7 +2,7 @@ package app.kingmojang.domain.member.application
 
 import app.kingmojang.domain.member.domain.Member
 import app.kingmojang.domain.member.domain.MemberType
-import app.kingmojang.domain.member.domain.UserDetailsImpl
+import app.kingmojang.domain.member.domain.UserPrincipal
 import app.kingmojang.domain.member.dto.request.LoginRequest
 import app.kingmojang.domain.member.dto.request.RefreshRequest
 import app.kingmojang.domain.member.dto.request.SignupRequest
@@ -45,7 +45,7 @@ class AuthService(
 
         val member = memberRepository.findByUsername(request.username) ?: throw CommonException(NOT_FOUND_USERNAME)
 
-        val accessToken = jwtUtils.generateToken(UserDetailsImpl(member))
+        val accessToken = jwtUtils.generateToken(UserPrincipal.create(member))
         val refreshToken = member.generateToken()
 
         return TokenResponse(accessToken, refreshToken)
@@ -56,7 +56,7 @@ class AuthService(
         val member = memberRepository.findByUsername(request.username) ?: throw CommonException(NOT_FOUND_USERNAME)
 
         if (member.refreshToken.isValid(request.refreshToken)) {
-            val accessToken = jwtUtils.generateToken(UserDetailsImpl(member))
+            val accessToken = jwtUtils.generateToken(UserPrincipal.create(member))
             val refreshToken = member.generateToken()
 
             return TokenResponse(accessToken, refreshToken)

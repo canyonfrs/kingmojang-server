@@ -17,7 +17,7 @@ import org.springframework.stereotype.Repository
 class MemoQueryRepository(
     private val queryFactory: JPAQueryFactory,
 ) {
-    fun findMemosWrittenByMember(request: NoOffsetPageRequest, username: String): List<MemoDto> {
+    fun findMemosWrittenByMember(request: NoOffsetPageRequest, memberId: Long): List<MemoDto> {
         val size = request.size.toLong()
         val builder = BooleanBuilder()
         builder.and(memo.updatedAt.lt(request.updateAt))
@@ -27,7 +27,7 @@ class MemoQueryRepository(
             .from(memo)
             .join(memo.writer, member)
             .where(
-                builder.and(memo.writer.username.eq(username))
+                builder.and(memo.writer.id.eq(memberId))
             )
             .orderBy(memo.updatedAt.desc())
             .limit(size)

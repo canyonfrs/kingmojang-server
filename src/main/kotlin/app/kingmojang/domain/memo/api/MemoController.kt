@@ -1,5 +1,6 @@
 package app.kingmojang.domain.memo.api
 
+import app.kingmojang.domain.member.domain.UserPrincipal
 import app.kingmojang.domain.memo.application.MemoService
 import app.kingmojang.domain.memo.dto.request.MemoRequest
 import app.kingmojang.domain.memo.dto.response.MemoResponse
@@ -10,7 +11,6 @@ import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.annotation.AuthenticationPrincipal
-import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 
@@ -23,10 +23,10 @@ class MemoController(
     @PostMapping
     @PreAuthorize("hasRole('CREATOR')")
     fun createMemo(
-        @AuthenticationPrincipal userDetails: UserDetails,
+        @AuthenticationPrincipal userPrincipal: UserPrincipal,
         @RequestBody @Valid request: MemoRequest,
     ): ResponseEntity<CommonResponse<Void>> {
-        val id = memoService.createMemo(userDetails, request)
+        val id = memoService.createMemo(userPrincipal, request)
 
         val uri = ServletUriComponentsBuilder
             .fromCurrentContextPath().path("/memos/{id}")
@@ -38,25 +38,25 @@ class MemoController(
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('CREATOR')")
     fun updateMemo(
-        @AuthenticationPrincipal userDetails: UserDetails,
+        @AuthenticationPrincipal userPrincipal: UserPrincipal,
         @PathVariable id: Long,
         @RequestBody @Valid request: MemoRequest,
     ): ResponseEntity<CommonResponse<Long>> {
-        val updateMemoId = memoService.updateMemo(userDetails, id, request)
+        val updateMemoId = memoService.updateMemo(userPrincipal, id, request)
         return ResponseEntity.ok(CommonResponse.success(updateMemoId))
     }
 
     @GetMapping("/{id}")
     fun readMemo(
-        @AuthenticationPrincipal userDetails: UserDetails?,
+        @AuthenticationPrincipal userPrincipal: UserPrincipal?,
         @PathVariable id: Long,
         @RequestParam(defaultValue = "10") size: Long,
         @RequestParam(defaultValue = "0") page: Long,
     ): ResponseEntity<CommonResponse<MemoResponse>> {
         val request = CommonPageRequest(size, page)
         val memo =
-            if (userDetails == null) memoService.readMemo(id, request)
-            else memoService.readMemoWithUsername(userDetails, id, request)
+            if (userPrincipal == null) memoService.readMemo(id, request)
+            else memoService.readMemoWithUsername(userPrincipal, id, request)
 
         return ResponseEntity.ok(CommonResponse.success(memo))
     }

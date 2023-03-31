@@ -3,12 +3,12 @@ package app.kingmojang.domain.comment.api
 import app.kingmojang.domain.comment.application.CommentService
 import app.kingmojang.domain.comment.dto.request.CommentRequest
 import app.kingmojang.domain.comment.dto.response.CommentsResponse
+import app.kingmojang.domain.member.domain.UserPrincipal
 import app.kingmojang.global.common.request.CommonPageRequest
 import app.kingmojang.global.common.response.CommonResponse
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.annotation.AuthenticationPrincipal
-import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 
@@ -20,11 +20,11 @@ class CommentController(
     @PostMapping("/memos/{memoId}/comments")
     @PreAuthorize("hasRole({'USER', 'CREATOR'})")
     fun createComment(
-        @AuthenticationPrincipal userDetails: UserDetails,
+        @AuthenticationPrincipal userPrincipal: UserPrincipal,
         @PathVariable memoId: Long,
         @RequestBody request: CommentRequest,
     ): ResponseEntity<CommonResponse<Long>> {
-        val commentId = commentService.createComment(userDetails, memoId, request)
+        val commentId = commentService.createComment(userPrincipal, memoId, request)
 
         val uri = ServletUriComponentsBuilder
             .fromCurrentContextPath().path("/memos/${memoId}/comments/${commentId}")
@@ -36,20 +36,20 @@ class CommentController(
     @PutMapping("/comments/{commentId}")
     @PreAuthorize("hasRole({'USER', 'CREATOR'})")
     fun updateComment(
-        @AuthenticationPrincipal userDetails: UserDetails,
+        @AuthenticationPrincipal userPrincipal: UserPrincipal,
         @PathVariable commentId: Long,
         @RequestBody request: CommentRequest,
     ): ResponseEntity<CommonResponse<Long>> {
-        return ResponseEntity.ok(CommonResponse.success(commentService.updateComment(userDetails, commentId, request)))
+        return ResponseEntity.ok(CommonResponse.success(commentService.updateComment(userPrincipal, commentId, request)))
     }
 
     @DeleteMapping("/comments/{commentId}")
     @PreAuthorize("hasRole({'USER', 'CREATOR'})")
     fun deleteComment(
-        @AuthenticationPrincipal userDetails: UserDetails,
+        @AuthenticationPrincipal userPrincipal: UserPrincipal,
         @PathVariable commentId: Long,
     ): ResponseEntity<CommonResponse<Void>> {
-        commentService.deleteComment(userDetails, commentId)
+        commentService.deleteComment(userPrincipal, commentId)
         return ResponseEntity.ok(CommonResponse.success())
     }
 

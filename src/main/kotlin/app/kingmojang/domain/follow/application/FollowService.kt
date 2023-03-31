@@ -4,10 +4,11 @@ import app.kingmojang.domain.follow.domain.Follow
 import app.kingmojang.domain.follow.exception.FollowAlreadyExistException
 import app.kingmojang.domain.follow.exception.NotFoundFollowException
 import app.kingmojang.domain.follow.repository.FollowRepository
+import app.kingmojang.domain.member.domain.UserPrincipal
 import app.kingmojang.domain.member.exception.NotFoundMemberException
 import app.kingmojang.domain.member.repository.MemberRepository
+import app.kingmojang.global.validator.MemberIdValidator
 import org.springframework.data.repository.findByIdOrNull
-import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -18,7 +19,8 @@ class FollowService(
 ) {
 
     @Transactional
-    fun createFollow(userDetails: UserDetails, followerId: Long, creatorId: Long): Long {
+    fun createFollow(userPrincipal: UserPrincipal , followerId: Long, creatorId: Long): Long {
+        MemberIdValidator.validate(userPrincipal.getId(), followerId)
         if (followRepository.existsByCreatorIdAndFollowerId(creatorId, followerId)) {
             throw FollowAlreadyExistException(followerId, creatorId)
         }
@@ -28,7 +30,8 @@ class FollowService(
     }
 
     @Transactional
-    fun deleteFollow(userDetails: UserDetails, followerId: Long, creatorId: Long) {
+    fun deleteFollow(userPrincipal: UserPrincipal, followerId: Long, creatorId: Long) {
+        MemberIdValidator.validate(userPrincipal.getId(), followerId)
         val follow = (followRepository.findByCreatorIdAndFollowerId(creatorId, followerId)
             ?: throw NotFoundFollowException(followerId, creatorId))
         follow.remove()

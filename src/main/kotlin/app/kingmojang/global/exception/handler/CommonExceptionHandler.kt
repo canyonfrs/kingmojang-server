@@ -5,7 +5,9 @@ import app.kingmojang.global.common.response.ExceptionBody
 import app.kingmojang.global.exception.CommonException
 import app.kingmojang.global.exception.ErrorCodes
 import app.kingmojang.global.exception.common.InvalidInputException
+import org.springframework.http.HttpStatusCode
 import org.springframework.http.ResponseEntity
+import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.validation.BindException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
@@ -25,6 +27,12 @@ class CommonExceptionHandler {
                 cause = e
             )
         )
+    }
+
+    @ExceptionHandler(BadCredentialsException::class)
+    fun onBindException(e: BadCredentialsException): ResponseEntity<CommonResponse<ExceptionBody>> {
+        return ResponseEntity.status(401)
+            .body(CommonResponse.error(e.message!!, ExceptionBody.of(ErrorCodes.BAD_CREDENTIAL_EXCEPTION)))
     }
 
 //    @ExceptionHandler(RuntimeException::class)

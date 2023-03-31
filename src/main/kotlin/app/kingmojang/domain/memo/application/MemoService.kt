@@ -5,6 +5,8 @@ import app.kingmojang.domain.comment.repository.CommentQueryRepository
 import app.kingmojang.domain.like.domain.MemoLike
 import app.kingmojang.domain.like.exception.NotFoundMemoLikeException
 import app.kingmojang.domain.like.repository.MemoLikeRepository
+import app.kingmojang.domain.member.domain.UserPrincipal
+import app.kingmojang.domain.member.exception.NotFoundMemberException
 import app.kingmojang.domain.member.exception.NotFoundUsernameException
 import app.kingmojang.domain.member.repository.MemberRepository
 import app.kingmojang.domain.memo.domain.Memo
@@ -16,10 +18,8 @@ import app.kingmojang.domain.memo.repository.MemoQueryRepository
 import app.kingmojang.domain.memo.repository.MemoRepository
 import app.kingmojang.global.common.request.CommonPageRequest
 import app.kingmojang.global.common.request.NoOffsetPageRequest
-import app.kingmojang.global.exception.CommonException
-import app.kingmojang.global.exception.ErrorCodes.*
+import app.kingmojang.global.validator.MemberIdValidator
 import org.springframework.data.repository.findByIdOrNull
-import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -33,16 +33,16 @@ class MemoService(
 ) {
 
     @Transactional
-    fun createMemo(userDetails: UserDetails, request: MemoRequest): Long {
-        validate(userDetails.username, request.username)
-        val writer = memberRepository.findByUsername(userDetails.username)
-            ?: throw NotFoundUsernameException(userDetails.username)
+    fun createMemo(userPrincipal: UserPrincipal, request: MemoRequest): Long {
+        MemberIdValidator.validate(userPrincipal.getId(), request.memberId)
+        val writer = memberRepository.findByUsername(userPrincipal.username)
+            ?: throw NotFoundUsernameException(userPrincipal.username)
         return memoRepository.save(Memo.create(writer, request)).id!!
     }
 
     @Transactional
-    fun updateMemo(userDetails: UserDetails, id: Long, request: MemoRequest): Long {
-        validate(userDetails.username, request.username)
+    fun updateMemo(userPrincipal: UserPrincipal, id: Long, request: MemoRequest): Long {
+        MemberIdValidator.validate(userPrincipal.getId(), request.memberId)
         val memo = memoRepository.findByIdOrNull(id) ?: throw NotFoundMemoException(id)
         return memo.update(request).id!!
     }
@@ -55,8 +55,8 @@ class MemoService(
     }
 
     @Transactional(readOnly = true)
-    fun readMemoWithUsername(userDetails: UserDetails, id: Long, request: CommonPageRequest): MemoResponse {
-        val username = userDetails.username
+    fun readMemoWithUsername(userPrincipal: UserPrincipal, id: Long, request: CommonPageRequest): MemoResponse {
+        val username = userPrincipal.username
         val memo = memoQueryRepository.findByIdOrNullWithUsername(id, username)
             ?: throw NotFoundMemoException(id)
         val commentsResponse = CommentsResponse.of(
@@ -66,16 +66,16 @@ class MemoService(
     }
 
     @Transactional
-    fun deleteMemo(userDetails: UserDetails, id: Long) {
+    fun deleteMemo(userPrincipal: UserPrincipal, id: Long) {
         val memo = memoRepository.findByIdOrNull(id) ?: throw NotFoundMemoException(id)
-        validate(userDetails.username, memo.writer.username)
+        MemberIdValidator.validate(userPrincipal.getId(), memo.writer.id!!)
         memoLikeRepository.deleteAllByIdInBatch(memoLikeRepository.findAllByMemoId(id))
         memoRepository.delete(memo)
     }
 
     @Transactional(readOnly = true)
-    fun readMemosWrittenByMember(username: String, request: NoOffsetPageRequest): MemosResponse {
-        return MemosResponse.of(memoQueryRepository.findMemosWrittenByMember(request, username))
+    fun readMemosWrittenByMember(memberId: Long, request: NoOffsetPageRequest): MemosResponse {
+        return MemosResponse.of(memoQueryRepository.findMemosWrittenByMember(request, memberId))
     }
 
     @Transactional(readOnly = true)
@@ -84,25 +84,19 @@ class MemoService(
     }
 
     @Transactional
-    fun increaseMemoLikeCount(userDetails: UserDetails, id: Long, username: String): Long {
-        validate(userDetails.username, username)
-        val memo = memoRepository.findByIdOrNull(id) ?: throw NotFoundMemoException(id)
-        val member = memberRepository.findByUsername(username) ?: throw NotFoundUsernameException(username)
+    fun increaseMemoLikeCount(userPrincipal: UserPrincipal, memoId: Long, memberId: Long): Long {
+        MemberIdValidator.validate(userPrincipal.getId(), memberId)
+        val memo = memoRepository.findByIdOrNull(memoId) ?: throw NotFoundMemoException(memoId)
+        val member = memberRepository.findByIdOrNull(memberId) ?: throw NotFoundMemberException(memberId)
         return memoLikeRepository.save(MemoLike.create(member, memo)).id!!
     }
 
     @Transactional
-    fun decreaseMemoLikeCount(userDetails: UserDetails, id: Long, username: String) {
-        validate(userDetails.username, username)
-        val memoLike = memoLikeRepository.findByMemoIdAndMemberUsername(id, username)
-            ?: throw NotFoundMemoLikeException(id, username)
+    fun decreaseMemoLikeCount(userPrincipal: UserPrincipal, memoId: Long, memberId: Long) {
+        MemberIdValidator.validate(userPrincipal.getId(), memberId)
+        val memoLike = memoLikeRepository.findByMemoIdAndMemberId(memoId, memberId)
+            ?: throw NotFoundMemoLikeException(memoId, memberId)
         memoLike.remove()
         return memoLikeRepository.delete(memoLike)
-    }
-
-    private fun validate(tokenUsername: String, reqUsername: String) {
-        if (tokenUsername != reqUsername) {
-            throw CommonException(INVALID_JWT_TOKEN)
-        }
     }
 }

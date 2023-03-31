@@ -2,12 +2,12 @@ package app.kingmojang.domain.like.api
 
 import app.kingmojang.domain.comment.application.CommentService
 import app.kingmojang.domain.comment.application.ReplyService
+import app.kingmojang.domain.member.domain.UserPrincipal
 import app.kingmojang.domain.memo.application.MemoService
 import app.kingmojang.global.common.response.CommonResponse
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.annotation.AuthenticationPrincipal
-import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -26,11 +26,11 @@ class LikeController(
     @PostMapping("/memos/{memoId}/like")
     @PreAuthorize("hasRole({'USER', 'CREATOR'})")
     fun increaseMemoLikeCount(
-        @AuthenticationPrincipal userDetails: UserDetails,
+        @AuthenticationPrincipal userPrincipal: UserPrincipal,
         @PathVariable memoId: Long,
-        @RequestParam username: String,
+        @RequestParam memberId: Long,
     ): ResponseEntity<CommonResponse<Void>> {
-        val likeId = memoService.increaseMemoLikeCount(userDetails, memoId, username)
+        val likeId = memoService.increaseMemoLikeCount(userPrincipal, memoId, memberId)
 
         val uri = ServletUriComponentsBuilder
             .fromCurrentContextPath().path("/memos/$memoId/like/$likeId")
@@ -42,22 +42,22 @@ class LikeController(
     @DeleteMapping("/memos/{memoId}/like")
     @PreAuthorize("hasRole({'USER', 'CREATOR'})")
     fun decreaseMemoLikeCount(
-        @AuthenticationPrincipal userDetails: UserDetails,
+        @AuthenticationPrincipal userPrincipal: UserPrincipal,
         @PathVariable memoId: Long,
-        @RequestParam username: String,
+        @RequestParam memberId: Long,
     ): ResponseEntity<CommonResponse<Void>> {
-        memoService.decreaseMemoLikeCount(userDetails, memoId, username)
+        memoService.decreaseMemoLikeCount(userPrincipal, memoId, memberId)
         return ResponseEntity.ok(CommonResponse.success())
     }
 
     @PostMapping("/comments/{commentId}/like")
     @PreAuthorize("hasRole({'USER', 'CREATOR'})")
     fun increaseCommentLikeCount(
-        @AuthenticationPrincipal userDetails: UserDetails,
+        @AuthenticationPrincipal userPrincipal: UserPrincipal,
         @PathVariable commentId: Long,
-        @RequestParam username: String,
+        @RequestParam memberId: Long,
     ): ResponseEntity<CommonResponse<Void>> {
-        val likeId = commentService.increaseCommentLikeCount(userDetails, commentId, username)
+        val likeId = commentService.increaseCommentLikeCount(userPrincipal, commentId, memberId)
 
         val uri = ServletUriComponentsBuilder
             .fromCurrentContextPath().path("/comments/$commentId/like/$likeId")
@@ -69,22 +69,22 @@ class LikeController(
     @DeleteMapping("/comments/{commentId}/like")
     @PreAuthorize("hasRole({'USER', 'CREATOR'})")
     fun decreaseCommentLikeCount(
-        @AuthenticationPrincipal userDetails: UserDetails,
+        @AuthenticationPrincipal userPrincipal: UserPrincipal,
         @PathVariable commentId: Long,
-        @RequestParam username: String,
+        @RequestParam memberId: Long,
     ): ResponseEntity<CommonResponse<Void>> {
-        commentService.decreaseCommentLikeCount(userDetails, commentId, username)
+        commentService.decreaseCommentLikeCount(userPrincipal, commentId, memberId)
         return ResponseEntity.ok(CommonResponse.success())
     }
 
     @PostMapping("/replies/{replyId}/like")
     @PreAuthorize("hasRole({'USER', 'CREATOR'})")
     fun increaseReplyLikeCount(
-        @AuthenticationPrincipal userDetails: UserDetails,
+        @AuthenticationPrincipal userPrincipal: UserPrincipal,
         @PathVariable replyId: Long,
-        @RequestParam username: String,
+        @RequestParam memberId: Long,
     ): ResponseEntity<CommonResponse<Void>> {
-        val likeId = replyService.increaseReplyLikeCount(userDetails, replyId, username)
+        val likeId = replyService.increaseReplyLikeCount(userPrincipal, replyId, memberId)
 
         val uri = ServletUriComponentsBuilder
             .fromCurrentContextPath().path("/replies/$replyId/like/$likeId")
@@ -96,11 +96,11 @@ class LikeController(
     @DeleteMapping("/replies/{replyId}/like")
     @PreAuthorize("hasRole({'USER', 'CREATOR'})")
     fun decreaseReplyLikeCount(
-        @AuthenticationPrincipal userDetails: UserDetails,
+        @AuthenticationPrincipal userPrincipal: UserPrincipal,
         @PathVariable replyId: Long,
-        @RequestParam username: String,
+        @RequestParam memberId: Long,
     ): ResponseEntity<CommonResponse<Void>> {
-        replyService.decreaseReplyLikeCount(userDetails, replyId, username)
+        replyService.decreaseReplyLikeCount(userPrincipal, replyId, memberId)
         return ResponseEntity.ok(CommonResponse.success())
     }
 }

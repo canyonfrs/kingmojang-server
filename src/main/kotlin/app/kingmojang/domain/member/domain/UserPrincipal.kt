@@ -31,6 +31,8 @@ class UserPrincipal(
 
     fun getProvider(): String = member.provider.toString()
 
+    fun generateToken(): String = member.generateToken()
+
     override fun getName(): String = member.username
 
     override fun getAttributes(): MutableMap<String, Any> = this.attributes

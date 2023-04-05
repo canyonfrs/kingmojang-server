@@ -13,27 +13,23 @@ class MemberService(
 ) {
 
     fun existsUsername(username: String): Boolean {
-        if (isBlank(username)) {
+        if (username.isBlank()) {
             throw InvalidInputException(username)
         }
         return memberRepository.existsByUsername(username)
     }
 
     fun existsNickname(nickname: String, type: String): Boolean {
-        if (isBlank(nickname) || !MemberType.isValidate(type)) {
+        if (nickname.isBlank() || !MemberType.isValidate(type)) {
             throw InvalidInputException(nickname)
         }
         return memberRepository.existsByNicknameAndType(nickname, MemberType.valueOf(type))
     }
 
     fun existsEmail(email: String): Boolean {
-        if (isBlank(email)) {
+        if (email.isBlank()) {
             throw InvalidInputException(email)
         }
         return memberRepository.existsByEmail(email)
-    }
-
-    private fun isBlank(value: String): Boolean {
-        return value.isBlank()
     }
 }

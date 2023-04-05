@@ -39,22 +39,22 @@ class MemberController(
         return existsResult(memberService.existsEmail(email))
     }
 
-    private fun existsResult(isExists: Boolean) = if (isExists) {
-        ResponseEntity.status(HttpStatus.CONFLICT).body(CommonResponse.success())
-    } else {
-        ResponseEntity.noContent().build()
-    }
-
-    @GetMapping("/{username}/memos")
+    @GetMapping("/{memberId}/memos")
     fun readMemosWrittenByMember(
-        @PathVariable username: String,
+        @PathVariable memberId: Long,
         @RequestParam @Positive timestamp: Long?,
         @RequestParam(defaultValue = "10") size: Int,
     ): ResponseEntity<CommonResponse<MemosResponse>> {
         return ResponseEntity.ok(
             CommonResponse.success(
-                memoService.readMemosWrittenByMember(username, NoOffsetPageRequest.of(timestamp, size))
+                memoService.readMemosWrittenByMember(memberId, NoOffsetPageRequest.of(timestamp, size))
             )
         )
+    }
+
+    private fun existsResult(isExists: Boolean) = if (isExists) {
+        ResponseEntity.status(HttpStatus.CONFLICT).body(CommonResponse.success())
+    } else {
+        ResponseEntity.noContent().build()
     }
 }

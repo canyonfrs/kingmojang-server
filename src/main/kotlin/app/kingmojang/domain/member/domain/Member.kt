@@ -37,6 +37,7 @@ class Member(
     var followerCount: Int = 0,
 
     @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "creator_information_id")
     var creatorInformation: CreatorInformation? = null,
 
     @Embedded

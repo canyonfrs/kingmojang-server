@@ -8,6 +8,7 @@ enum class ErrorCodes(val status: HttpStatus, val description: String) {
     DUPLICATE_USERNAME(HttpStatus.CONFLICT, ""),
     DUPLICATE_FOLLOW(HttpStatus.CONFLICT, ""),
     INVALID_INPUT(HttpStatus.BAD_REQUEST, ""),
+    BAD_REQUEST(HttpStatus.BAD_REQUEST, ""),
     NOT_FOUND_USERNAME(HttpStatus.NOT_FOUND, ""),
     NOT_FOUND_MEMO(HttpStatus.NOT_FOUND, ""),
     NOT_FOUND_COMMENT(HttpStatus.NOT_FOUND, ""),

@@ -7,14 +7,13 @@ import app.kingmojang.domain.member.dto.request.LoginRequest
 import app.kingmojang.domain.member.dto.request.RefreshRequest
 import app.kingmojang.domain.member.dto.request.SignupRequest
 import app.kingmojang.domain.member.dto.response.TokenResponse
-import app.kingmojang.domain.member.exception.SameEmailAlreadyExistException
-import app.kingmojang.domain.member.exception.SameNicknameAlreadyExistException
-import app.kingmojang.domain.member.exception.SameUsernameAlreadyExistException
+import app.kingmojang.domain.member.exception.*
 import app.kingmojang.domain.member.repository.MemberRepository
 import app.kingmojang.global.exception.CommonException
 import app.kingmojang.global.exception.ErrorCodes.*
 import app.kingmojang.global.exception.common.InvalidInputException
 import app.kingmojang.global.security.JwtUtils
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -41,9 +40,10 @@ class AuthService(
 
     @Transactional
     fun login(request: LoginRequest): TokenResponse {
-        authenticationManager.authenticate(UsernamePasswordAuthenticationToken(request.username, request.password))
+        val username = request.username
+        authenticationManager.authenticate(UsernamePasswordAuthenticationToken(username, request.password))
 
-        val member = memberRepository.findByUsername(request.username) ?: throw CommonException(NOT_FOUND_USERNAME)
+        val member = memberRepository.findByUsername(username) ?: throw NotFoundUsernameException(username)
 
         val accessToken = jwtUtils.generateToken(UserPrincipal.create(member))
         val refreshToken = member.generateToken()
@@ -53,7 +53,8 @@ class AuthService(
 
     @Transactional
     fun refresh(request: RefreshRequest): TokenResponse {
-        val member = memberRepository.findByUsername(request.username) ?: throw CommonException(NOT_FOUND_USERNAME)
+        val memberId = request.memberId
+        val member = memberRepository.findByIdOrNull(memberId) ?: throw NotFoundMemberException(memberId)
 
         if (member.refreshToken.isValid(request.refreshToken)) {
             val accessToken = jwtUtils.generateToken(UserPrincipal.create(member))

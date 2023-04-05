@@ -29,7 +29,6 @@ class Member(
 
     @Column(nullable = false)
     val email: String,
-    val isAuthorizedAccount: Boolean,
 
     @Column(name = "profile_image")
     var profileImage: String,
@@ -37,8 +36,8 @@ class Member(
     @Column(name = "follower_count")
     var followerCount: Int = 0,
 
-    @Embedded
-    var information: CreatorInformation,
+    @OneToOne(fetch = FetchType.LAZY)
+    var creatorInformation: CreatorInformation? = null,
 
     @Embedded
     var refreshToken: RefreshToken,
@@ -64,15 +63,8 @@ class Member(
                 nickname = request.nickname,
                 password = request.password,
                 email = request.email,
-                information = CreatorInformation(
-                    request.introduce,
-                    request.youtube,
-                    request.broadcastLink,
-                    request.donationLink
-                ),
                 provider = AuthProvider.valueOf(request.provider),
                 type = MemberType.valueOf(request.memberType),
-                isAuthorizedAccount = request.isAuthorizedAccount,
                 profileImage = "",
                 createdAt = LocalDateTime.now(),
                 refreshToken = RefreshToken("", LocalDateTime.now())
@@ -88,23 +80,10 @@ class Member(
     fun increaseFollowerCount() = this.followerCount++
 
     fun decreaseFollowerCount() = this.followerCount--
-}
 
-@Embeddable
-data class CreatorInformation(
-    @Lob
-    @Column
-    val introduce: String?,
-
-    @Column
-    val youtube: String?,
-
-    @Column(name = "broadcast_link")
-    val broadcastLink: String?,
-
-    @Column(name = "donation_link")
-    val donationLink: String?,
-) {
+    fun createCreatorInformation(creatorInformation: CreatorInformation) {
+        this.creatorInformation = creatorInformation
+    }
 }
 
 @Embeddable

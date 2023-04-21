@@ -10,5 +10,6 @@ data class SignupRequest(
     @field:Email val email: String,
     @field:NotBlank val provider: String,
     @field:NotBlank val memberType: String,
+    val authCode: Int,
 ) {
 }

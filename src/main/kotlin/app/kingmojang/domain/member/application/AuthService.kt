@@ -1,5 +1,8 @@
 package app.kingmojang.domain.member.application
 
+import app.kingmojang.domain.authenticationcode.exception.ExpiredAuthCodeException
+import app.kingmojang.domain.authenticationcode.exception.NotFoundAuthCodeException
+import app.kingmojang.domain.authenticationcode.repository.AuthCodeRepository
 import app.kingmojang.domain.member.domain.Member
 import app.kingmojang.domain.member.domain.MemberType
 import app.kingmojang.domain.member.domain.UserPrincipal
@@ -24,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class AuthService(
     private val memberRepository: MemberRepository,
+    private val authCodeRepository: AuthCodeRepository,
     private val passwordEncoder: PasswordEncoder,
     private val authenticationManager: AuthenticationManager,
     private val jwtUtils: JwtUtils,
@@ -32,11 +36,17 @@ class AuthService(
     @Transactional
     fun signup(request: SignupRequest): Long {
         validate(request)
+        if (isCreatorSignup(request.memberType)) {
+            verifyAuthCode(request)
+        }
         val member = Member.create(
             request.copy(password = passwordEncoder.encode(request.password))
         )
         return memberRepository.save(member).id!!
     }
+
+    private fun isCreatorSignup(memberType: String) =
+        MemberType.CREATOR == MemberType.valueOf(memberType.uppercase())
 
     @Transactional
     fun login(request: LoginRequest): TokenResponse {
@@ -66,7 +76,7 @@ class AuthService(
     }
 
     private fun validate(request: SignupRequest) {
-        if (!MemberType.isValidate(request.memberType)) {
+        if (!MemberType.isValidate(request.memberType.uppercase())) {
             throw InvalidInputException(request.memberType)
         }
         if (memberRepository.existsByUsername(request.username)) {
@@ -77,6 +87,16 @@ class AuthService(
         }
         if (memberRepository.existsByNicknameAndType(request.nickname, MemberType.valueOf(request.memberType))) {
             throw SameNicknameAlreadyExistException(request.nickname)
+        }
+    }
+
+    private fun verifyAuthCode(request: SignupRequest) {
+        val authCode = authCodeRepository.findByCode(request.authCode)
+            ?: throw NotFoundAuthCodeException(request.authCode)
+        if (authCode.isNotExpired()) {
+            authCode.updateToExpire()
+        } else {
+            throw ExpiredAuthCodeException(request.authCode)
         }
     }
 }

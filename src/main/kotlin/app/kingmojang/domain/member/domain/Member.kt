@@ -43,7 +43,7 @@ class Member(
     @Embedded
     var refreshToken: RefreshToken,
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     val provider: AuthProvider,
 
     @Enumerated(EnumType.STRING)

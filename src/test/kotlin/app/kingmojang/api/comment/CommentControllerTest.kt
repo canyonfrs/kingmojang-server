@@ -32,7 +32,7 @@ class CommentControllerTest: RestControllerTest() {
         // when
         mockMvc.post("/api/v1/memos/$MEMO_ID/comments") {
             bearer(ACCESS_TOKEN)
-            jsonContent(createMemoRequest())
+            jsonContent(createCommentRequest())
         }.andExpect {
             status { isCreated() }
             header { exists("Location") }
@@ -49,7 +49,7 @@ class CommentControllerTest: RestControllerTest() {
         // when
         mockMvc.put("/api/v1/comments/$COMMENT_ID") {
             bearer(ACCESS_TOKEN)
-            jsonContent(createMemoRequest())
+            jsonContent(createCommentRequest())
         }.andExpect {
             status { isOk() }
             content { success(COMMENT_ID) }

@@ -2,6 +2,7 @@ package app.kingmojang.domain.authenticationcode.api
 
 import app.kingmojang.domain.authenticationcode.application.AuthCodeService
 import app.kingmojang.domain.member.domain.UserPrincipal
+import app.kingmojang.global.common.response.CommonResponse
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -22,13 +23,13 @@ class AuthCodeController(
     fun createAuthCode(
         @AuthenticationPrincipal userPrincipal: UserPrincipal,
         @RequestParam email: String
-    ): ResponseEntity<Void> {
+    ): ResponseEntity<CommonResponse<Void>> {
         val response = authCodeService.createAuthCode(userPrincipal, email)
 
         val uri = ServletUriComponentsBuilder
             .fromCurrentContextPath().path("/auth-codes/${response.authCodeId}")
             .buildAndExpand().toUri()
 
-        return ResponseEntity.created(uri).build()
+        return ResponseEntity.created(uri).body(CommonResponse.success())
     }
 }

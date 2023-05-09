@@ -17,8 +17,6 @@ import app.kingmojang.global.exception.ErrorCodes.*
 import app.kingmojang.global.exception.common.InvalidInputException
 import app.kingmojang.global.security.JwtUtils
 import org.springframework.data.repository.findByIdOrNull
-import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.crypto.password.PasswordEncoder
 
 import org.springframework.stereotype.Service
@@ -29,7 +27,6 @@ class AuthService(
     private val memberRepository: MemberRepository,
     private val authCodeRepository: AuthCodeRepository,
     private val passwordEncoder: PasswordEncoder,
-    private val authenticationManager: AuthenticationManager,
     private val jwtUtils: JwtUtils,
 ) {
 
@@ -51,14 +48,11 @@ class AuthService(
     @Transactional
     fun login(request: LoginRequest): TokenResponse {
         val username = request.username
-        authenticationManager.authenticate(UsernamePasswordAuthenticationToken(username, request.password))
-
         val member = memberRepository.findByUsername(username) ?: throw NotFoundUsernameException(username)
-
-        val accessToken = jwtUtils.generateToken(UserPrincipal.create(member))
-        val refreshToken = member.generateToken()
-
-        return TokenResponse(accessToken, refreshToken)
+        if (!passwordEncoder.matches(request.password, member.password)) {
+            throw InvalidPasswordException()
+        }
+        return createTokenResponse(member)
     }
 
     @Transactional
@@ -67,12 +61,16 @@ class AuthService(
         val member = memberRepository.findByIdOrNull(memberId) ?: throw NotFoundMemberException(memberId)
 
         if (member.refreshToken.isValid(request.refreshToken)) {
-            val accessToken = jwtUtils.generateToken(UserPrincipal.create(member))
-            val refreshToken = member.generateToken()
-
-            return TokenResponse(accessToken, refreshToken)
+            return createTokenResponse(member)
         }
         throw CommonException(INVALID_REFRESH_TOKEN)
+    }
+
+    private fun createTokenResponse(member: Member): TokenResponse {
+        val accessToken = jwtUtils.generateToken(UserPrincipal.create(member))
+        val refreshToken = member.generateToken()
+
+        return TokenResponse(accessToken, refreshToken)
     }
 
     private fun validate(request: SignupRequest) {

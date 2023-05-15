@@ -87,6 +87,35 @@ class CommentServiceTest : BehaviorSpec({
         }
     }
 
+    Given("정상적인 댓글 좋아요 요청이 있는 경우") {
+        val member = createMember()
+        val userPrincipal = UserPrincipal.create(member)
+        every { commentRepository.findByIdOrNull(COMMENT_ID) } returns createComment()
+        every { memberRepository.findByIdOrNull(MEMBER_ID) } returns member
+        every { commentLikeRepository.save(any()) } returns createCommentLike()
+
+        When("댓글 좋아요를 하면") {
+            val actual = commentService.increaseCommentLikeCount(userPrincipal, COMMENT_ID, MEMBER_ID)
+            Then("댓글 좋아요가 생성된다") {
+                actual shouldBe COMMENT_LIKE_ID
+            }
+        }
+    }
+
+    Given("정상적인 댓글 좋아요 취소 요청이 있는 경우") {
+        val userPrincipal = UserPrincipal.create(createMember())
+        val commentLike = createCommentLike()
+        every { commentLikeRepository.findByCommentIdAndMemberId(COMMENT_ID, MEMBER_ID) } returns commentLike
+        every { commentLikeRepository.delete(commentLike) } just Runs
+
+        When("댓글 좋아요를 취소 하면") {
+            val actual = commentService.decreaseCommentLikeCount(userPrincipal, COMMENT_ID, MEMBER_ID)
+            Then("댓글 좋아요가 취소된다") {
+                actual shouldBe Unit
+            }
+        }
+    }
+
     afterTest {
         clearAllMocks(answers = false)
     }

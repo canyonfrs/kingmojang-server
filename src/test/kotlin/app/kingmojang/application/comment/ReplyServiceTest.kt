@@ -72,6 +72,36 @@ class ReplyServiceTest : BehaviorSpec({
         }
     }
 
+
+    Given("정상적인 답글 좋아요 요청이 있는 경우") {
+        val member = createMember()
+        val userPrincipal = UserPrincipal.create(member)
+        every { replyRepository.findByIdOrNull(REPLY_ID) } returns createReply()
+        every { memberRepository.findByIdOrNull(MEMBER_ID) } returns member
+        every { replyLikeRepository.save(any()) } returns createReplyLike()
+
+        When("답글 좋아요를 하면") {
+            val actual = replyService.increaseReplyLikeCount(userPrincipal, REPLY_ID, MEMBER_ID)
+            Then("답글 좋아요가 생성된다") {
+                actual shouldBe REPLY_LIKE_ID
+            }
+        }
+    }
+
+    Given("정상적인 답글 좋아요 취소 요청이 있는 경우") {
+        val userPrincipal = UserPrincipal.create(createMember())
+        val replyLike = createReplyLike()
+        every { replyLikeRepository.findByReplyIdAndMemberId(REPLY_ID, MEMBER_ID) } returns replyLike
+        every { replyLikeRepository.delete(replyLike) } just Runs
+
+        When("답글 좋아요를 취소 하면") {
+            val actual = replyService.decreaseReplyLikeCount(userPrincipal, REPLY_ID, MEMBER_ID)
+            Then("답글 좋아요가 취소된다") {
+                actual shouldBe Unit
+            }
+        }
+    }
+
     afterTest {
         clearAllMocks(answers = false)
     }

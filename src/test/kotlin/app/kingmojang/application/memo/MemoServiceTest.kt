@@ -10,8 +10,7 @@ import app.kingmojang.domain.memo.repository.MemoRepository
 import app.kingmojang.fixture.*
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
-import io.mockk.every
-import io.mockk.mockk
+import io.mockk.*
 import org.springframework.data.repository.findByIdOrNull
 
 class MemoServiceTest : BehaviorSpec({
@@ -114,5 +113,38 @@ class MemoServiceTest : BehaviorSpec({
                 actual shouldBe createMemosResponse()
             }
         }
+    }
+
+    Given("정상적인 메모 좋아요 요청이 있는 경우") {
+        val member = createMember()
+        val userPrincipal = UserPrincipal.create(member)
+        every { memoRepository.findByIdOrNull(MEMO_ID) } returns createMemo()
+        every { memberRepository.findByIdOrNull(MEMBER_ID) } returns member
+        every { memoLikeRepository.save(any()) } returns createMemoLike()
+
+        When("메모 좋아요를 하면") {
+            val actual = memoService.increaseMemoLikeCount(userPrincipal, MEMO_ID, MEMBER_ID)
+            Then("메모 좋아요가 생성된다") {
+                actual shouldBe MEMO_LIKE_ID
+            }
+        }
+    }
+
+    Given("정상적인 메모 좋아요 취소 요청이 있는 경우") {
+        val userPrincipal = UserPrincipal.create(createMember())
+        val memoLike = createMemoLike()
+        every { memoLikeRepository.findByMemoIdAndMemberId(MEMO_ID, MEMBER_ID) } returns memoLike
+        every { memoLikeRepository.delete(memoLike) } just Runs
+
+        When("메모 좋아요를 취소 하면") {
+            val actual = memoService.decreaseMemoLikeCount(userPrincipal, MEMO_ID, MEMBER_ID)
+            Then("메모 좋아요가 취소된다") {
+                actual shouldBe Unit
+            }
+        }
+    }
+
+    afterTest {
+        clearAllMocks(answers = false)
     }
 })

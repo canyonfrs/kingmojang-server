@@ -40,9 +40,9 @@ class CommentQueryRepository(
         return commentsMap.map { it.value }.toList()
     }
 
-    fun readCommentsInMemoWithUsername(
+    fun readCommentsInMemoWithEmail(
         memoId: Long,
-        username: String,
+        email: String,
         request: CommonPageRequest,
     ): List<CommentResponse> {
         val comment = QComment.comment
@@ -53,8 +53,8 @@ class CommentQueryRepository(
         val commentIds = result.filter { it.get(comment) != null }.map { it.get(comment)?.id!! }.toSet()
         val replyIds = result.filter { it.get(reply) != null }.map { it.get(reply)?.id!! }.toSet()
 
-        val commentLikeResult = findAllByCommentIdsAndMemberUsername(commentIds, username).toSet()
-        val replyLikeResult = findAllByReplyIdsAndMemberUsername(replyIds, username).toSet()
+        val commentLikeResult = findAllByCommentIdsAndMemberEmail(commentIds, email).toSet()
+        val replyLikeResult = findAllByReplyIdsAndMemberEmail(replyIds, email).toSet()
         val commentsMap = mutableMapOf<Long, CommentResponse>()
 
         result.forEach {
@@ -81,19 +81,19 @@ class CommentQueryRepository(
         return commentsMap.map { it.value }.toList()
     }
 
-    private fun findAllByReplyIdsAndMemberUsername(replyIds: Set<Long>, username: String): MutableList<Long> {
+    private fun findAllByReplyIdsAndMemberEmail(replyIds: Set<Long>, email: String): MutableList<Long> {
         val replyLike = QReplyLike.replyLike
         return queryFactory
             .select(replyLike.reply.id).from(replyLike)
-            .where(replyLike.reply.id.`in`(replyIds).and(replyLike.member.username.eq(username)))
+            .where(replyLike.reply.id.`in`(replyIds).and(replyLike.member.email.eq(email)))
             .fetch()
     }
 
-    private fun findAllByCommentIdsAndMemberUsername(commentIds: Set<Long>, username: String): MutableList<Long> {
+    private fun findAllByCommentIdsAndMemberEmail(commentIds: Set<Long>, email: String): MutableList<Long> {
         val commentLike = QCommentLike.commentLike
         return queryFactory
             .select(commentLike.comment.id).from(commentLike)
-            .where(commentLike.comment.id.`in`(commentIds).and(commentLike.member.username.eq(username)))
+            .where(commentLike.comment.id.`in`(commentIds).and(commentLike.member.email.eq(email)))
             .fetch()
     }
 

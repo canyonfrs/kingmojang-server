@@ -8,7 +8,6 @@ import java.util.*
 @Entity
 @Table(
     uniqueConstraints = [
-        UniqueConstraint(name = "username_uk", columnNames = ["username"]),
         UniqueConstraint(name = "email_uk", columnNames = ["email"])
     ]
 )
@@ -17,9 +16,6 @@ class Member(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
     val id: Long? = null,
-
-    @Column(nullable = false)
-    val username: String,
 
     @Column(nullable = false)
     var password: String,
@@ -60,7 +56,6 @@ class Member(
     companion object {
         fun create(request: SignupRequest): Member {
             return Member(
-                username = request.username,
                 nickname = request.nickname,
                 password = request.password,
                 email = request.email,

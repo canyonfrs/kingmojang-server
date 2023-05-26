@@ -21,11 +21,6 @@ class MemberController(
     private val memoService: MemoService,
 ) {
 
-    @GetMapping("/username")
-    fun existsUsername(@RequestParam(defaultValue = "") username: String): ResponseEntity<CommonResponse<Void>> {
-        return existsResult(memberService.existsUsername(username))
-    }
-
     @GetMapping("/nickname")
     fun existsNickname(
         @RequestParam(defaultValue = "") nickname: String,

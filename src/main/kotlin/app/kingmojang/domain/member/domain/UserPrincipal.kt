@@ -33,13 +33,13 @@ class UserPrincipal(
 
     fun generateToken(): String = member.generateToken()
 
-    override fun getName(): String = member.username
+    override fun getName(): String = member.nickname
 
     override fun getAttributes(): MutableMap<String, Any> = this.attributes
 
     override fun getPassword(): String = member.password
 
-    override fun getUsername(): String = member.username
+    override fun getUsername(): String = member.email
 
     override fun isAccountNonExpired(): Boolean = enabled
 

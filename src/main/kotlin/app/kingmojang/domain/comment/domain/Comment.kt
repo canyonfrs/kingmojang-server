@@ -47,6 +47,7 @@ class Comment(
                 writer = writer,
                 memo = memo,
                 content = request.content,
+                highlight = null,
                 likeCount = 0,
                 replyCount = 0,
                 createdAt = now,

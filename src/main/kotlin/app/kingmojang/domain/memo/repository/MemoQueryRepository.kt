@@ -53,19 +53,19 @@ class MemoQueryRepository(
             .fetchOne()
     }
 
-    fun findByIdOrNullWithUsername(id: Long, username: String): MemoDto? {
+    fun findByIdOrNullWithEmail(id: Long, email: String): MemoDto? {
         return queryFactory
-            .select(createQMemoDto(existsMemoLike(id, username)))
+            .select(createQMemoDto(existsMemoLike(id, email)))
             .from(memo)
             .join(memo.writer, member)
             .where(memo.id.eq(id))
             .fetchOne()
     }
 
-    private fun existsMemoLike(memoId: Long, username: String): BooleanExpression =
+    private fun existsMemoLike(memoId: Long, email: String): BooleanExpression =
         if (JPAExpressions
                 .selectFrom(memoLike)
-                .where(memoLike.memo.id.eq(memoId).and(memoLike.member.username.eq(username)))
+                .where(memoLike.memo.id.eq(memoId).and(memoLike.member.email.eq(email)))
                 .fetchOne() == null
         ) Expressions.FALSE
         else Expressions.TRUE

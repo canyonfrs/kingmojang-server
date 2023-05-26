@@ -47,8 +47,8 @@ class AuthService(
 
     @Transactional
     fun login(request: LoginRequest): TokenResponse {
-        val username = request.username
-        val member = memberRepository.findByUsername(username) ?: throw NotFoundUsernameException(username)
+        val email = request.email
+        val member = memberRepository.findByEmail(email) ?: throw NotFoundEmailException(email)
         if (!passwordEncoder.matches(request.password, member.password)) {
             throw InvalidPasswordException()
         }
@@ -76,9 +76,6 @@ class AuthService(
     private fun validate(request: SignupRequest) {
         if (!MemberType.isValidate(request.memberType.uppercase())) {
             throw InvalidInputException(request.memberType)
-        }
-        if (memberRepository.existsByUsername(request.username)) {
-            throw SameUsernameAlreadyExistException(request.username)
         }
         if (memberRepository.existsByEmail(request.email)) {
             throw SameEmailAlreadyExistException(request.email)

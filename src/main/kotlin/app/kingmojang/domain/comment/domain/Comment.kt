@@ -1,6 +1,7 @@
 package app.kingmojang.domain.comment.domain
 
 import app.kingmojang.domain.comment.dto.request.CommentRequest
+import app.kingmojang.domain.highlight.domain.Highlight
 import app.kingmojang.domain.member.domain.Member
 import app.kingmojang.domain.memo.domain.Memo
 import jakarta.persistence.*
@@ -20,6 +21,10 @@ class Comment(
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "memo_id")
     val memo: Memo,
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "highlight_id")
+    var highlight: Highlight? = null,
 
     @Lob
     var content: String,

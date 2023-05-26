@@ -26,7 +26,7 @@ class MemoServiceTest : BehaviorSpec({
     Given("정상적인 메모 생성 요청이 있는 경우") {
         val member = createMember()
         val userPrincipal = UserPrincipal.create(member)
-        every { memberRepository.findByUsername(USERNAME) } returns member
+        every { memberRepository.findByEmail(EMAIL) } returns member
         every { memoRepository.save(any()) } returns createMemo()
 
         When("메모를 생성하면") {
@@ -68,9 +68,9 @@ class MemoServiceTest : BehaviorSpec({
         val member = createMember()
         val userPrincipal = UserPrincipal.create(member)
         val commonPageRequest = createCommonPageRequest()
-        every { memoQueryRepository.findByIdOrNullWithUsername(MEMO_ID, USERNAME) } returns createMemoDto()
+        every { memoQueryRepository.findByIdOrNullWithEmail(MEMO_ID, EMAIL) } returns createMemoDto()
         every {
-            commentQueryRepository.readCommentsInMemoWithUsername(MEMO_ID, USERNAME, commonPageRequest)
+            commentQueryRepository.readCommentsInMemoWithEmail(MEMO_ID, EMAIL, commonPageRequest)
         } returns listOf(createCommentResponse())
 
         When("비로그인 유저가 메모를 조회하면") {

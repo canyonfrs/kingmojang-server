@@ -3,9 +3,7 @@ package app.kingmojang.application.member
 import app.kingmojang.domain.member.application.MemberService
 import app.kingmojang.domain.member.domain.MemberType
 import app.kingmojang.domain.member.repository.MemberRepository
-import app.kingmojang.fixture.EMAIL
-import app.kingmojang.fixture.NICKNAME
-import app.kingmojang.fixture.USERNAME
+import app.kingmojang.fixture.*
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.every
@@ -15,26 +13,6 @@ class MemberServiceTest : BehaviorSpec({
     val memberRepository = mockk<MemberRepository>()
 
     val memberService = MemberService(memberRepository)
-
-    Given("중복되지 않은 아이디가 주어진 경우") {
-        every { memberRepository.existsByUsername(USERNAME) } returns false
-        When("해당 아이디가 존재하는지 확인하면") {
-
-            Then("false가 반환된다") {
-                memberService.existsUsername(USERNAME) shouldBe false
-            }
-        }
-    }
-
-    Given("중복된 아이디가 주어진 경우") {
-        every { memberRepository.existsByUsername(USERNAME) } returns true
-        When("해당 아이디가 존재하는지 확인하면") {
-
-            Then("true가 반환된다") {
-                memberService.existsUsername(USERNAME) shouldBe true
-            }
-        }
-    }
 
     Given("중복되지 않은 닉네임이 주어진 경우") {
         every { memberRepository.existsByNicknameAndType(NICKNAME, MemberType.USER) } returns false

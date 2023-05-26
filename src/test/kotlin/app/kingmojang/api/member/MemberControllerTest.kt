@@ -20,29 +20,6 @@ class MemberControllerTest : RestControllerTest() {
     private lateinit var memoService: MemoService
 
     @Test
-    fun `중복된 아이디가 없는 경우 204 응답코드가 반환된다`() {
-        every { memberService.existsUsername(USERNAME) } returns false
-
-        mockMvc.get("/api/v1/members/username") {
-            param("username", USERNAME)
-        }.andExpect {
-            status { isNoContent() }
-        }
-    }
-
-    @Test
-    fun `중복된 아이디가 있는 경우 409 응답코드가 반환된다`() {
-        every { memberService.existsUsername(USERNAME) } returns true
-
-        mockMvc.get("/api/v1/members/username") {
-            param("username", USERNAME)
-        }.andExpect {
-            status { isConflict() }
-            content { success() }
-        }
-    }
-
-    @Test
     fun `중복된 닉네임이 없는 경우 204 응답코드가 반환된다`() {
         every { memberService.existsNickname(NICKNAME, any()) } returns false
 

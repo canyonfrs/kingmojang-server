@@ -32,6 +32,8 @@ class Memo(
 
     @Column(name = "updated_at", nullable = false)
     var updatedAt: LocalDateTime,
+
+    var version: Int = 0,
 ) {
     companion object {
         fun create(writer: Member, request: MemoRequest): Memo {

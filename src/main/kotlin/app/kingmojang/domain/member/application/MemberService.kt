@@ -12,13 +12,6 @@ class MemberService(
     private val memberRepository: MemberRepository,
 ) {
 
-    fun existsUsername(username: String): Boolean {
-        if (username.isBlank()) {
-            throw InvalidInputException(username)
-        }
-        return memberRepository.existsByUsername(username)
-    }
-
     fun existsNickname(nickname: String, type: String): Boolean {
         if (nickname.isBlank() || !MemberType.isValidate(type)) {
             throw InvalidInputException(nickname)

@@ -61,7 +61,7 @@ fun createComment(
     createdAt: LocalDateTime = COMMENT_CREATED_AT,
     updatedAt: LocalDateTime = COMMENT_UPDATED_AT,
 ): Comment {
-    return Comment(commentId, writer, memo, content, likeCount, replyCount, createdAt, updatedAt)
+    return Comment(commentId, writer, memo, null, content, likeCount, replyCount, createdAt, updatedAt)
 }
 
 fun createCommentLike(

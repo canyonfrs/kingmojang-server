@@ -13,7 +13,6 @@ import java.time.LocalDateTime
 import java.util.*
 
 const val MEMBER_ID = 1L
-const val USERNAME = "proto_seo"
 const val EMAIL = "proto_seo@naver.com"
 const val NICKNAME = "캬옹"
 const val PASSWORD = "password"
@@ -25,7 +24,6 @@ val REFRESH_TOKEN: UUID = UUID.fromString("a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
 val MEMBER_CREATED_AT: LocalDateTime = LocalDateTime.now()
 
 fun createSignupRequest(
-    username: String = USERNAME,
     password: String = PASSWORD,
     nickname: String = NICKNAME,
     email: String = EMAIL,
@@ -34,7 +32,6 @@ fun createSignupRequest(
     authCode: Int = AUTH_CODE
 ): SignupRequest {
     return SignupRequest(
-        username,
         password,
         nickname,
         email,
@@ -45,10 +42,10 @@ fun createSignupRequest(
 }
 
 fun createLoginRequest(
-    username: String = USERNAME,
+    email: String = EMAIL,
     password: String = PASSWORD,
 ): LoginRequest {
-    return LoginRequest(username, password)
+    return LoginRequest(email, password)
 }
 
 fun createRefreshRequest(
@@ -67,7 +64,6 @@ fun createTokenResponse(
 
 fun createMember(
     memberId: Long = MEMBER_ID,
-    username: String = USERNAME,
     password: String = PASSWORD,
     nickname: String = NICKNAME,
     email: String = EMAIL,
@@ -79,7 +75,6 @@ fun createMember(
     val refreshToken = RefreshToken(REFRESH_TOKEN.toString(), LocalDateTime.now().plusYears(1))
     return Member(
         id = memberId,
-        username = username,
         password = BCryptPasswordEncoder().encode(password),
         nickname = nickname,
         email = email,

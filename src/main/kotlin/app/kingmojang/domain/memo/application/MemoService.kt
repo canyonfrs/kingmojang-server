@@ -7,7 +7,7 @@ import app.kingmojang.domain.like.exception.NotFoundMemoLikeException
 import app.kingmojang.domain.like.repository.MemoLikeRepository
 import app.kingmojang.domain.member.domain.UserPrincipal
 import app.kingmojang.domain.member.exception.NotFoundMemberException
-import app.kingmojang.domain.member.exception.NotFoundUsernameException
+import app.kingmojang.domain.member.exception.NotFoundEmailException
 import app.kingmojang.domain.member.repository.MemberRepository
 import app.kingmojang.domain.memo.domain.Memo
 import app.kingmojang.domain.memo.dto.request.MemoRequest
@@ -35,8 +35,8 @@ class MemoService(
     @Transactional
     fun createMemo(userPrincipal: UserPrincipal, request: MemoRequest): Long {
         MemberIdValidator.validate(userPrincipal.getId(), request.memberId)
-        val writer = memberRepository.findByUsername(userPrincipal.username)
-            ?: throw NotFoundUsernameException(userPrincipal.username)
+        val writer = memberRepository.findByEmail(userPrincipal.username)
+            ?: throw NotFoundEmailException(userPrincipal.username)
         return memoRepository.save(Memo.create(writer, request)).id!!
     }
 
@@ -56,11 +56,11 @@ class MemoService(
 
     @Transactional(readOnly = true)
     fun readMemoWithUsername(userPrincipal: UserPrincipal, id: Long, request: CommonPageRequest): MemoResponse {
-        val username = userPrincipal.username
-        val memo = memoQueryRepository.findByIdOrNullWithUsername(id, username)
+        val email = userPrincipal.username
+        val memo = memoQueryRepository.findByIdOrNullWithEmail(id, email)
             ?: throw NotFoundMemoException(id)
         val commentsResponse = CommentsResponse.of(
-            commentQueryRepository.readCommentsInMemoWithUsername(id, username, request)
+            commentQueryRepository.readCommentsInMemoWithEmail(id, email, request)
         )
         return MemoResponse.of(memo, commentsResponse)
     }

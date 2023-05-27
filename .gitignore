@@ -39,7 +39,7 @@ out/
 ### Local docker compose yml, environment file
 docker-compose-local.yml
 .env
-db/
+/db/
 
 ### application configuration yml
 application-datasource.yml

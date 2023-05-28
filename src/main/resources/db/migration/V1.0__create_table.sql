@@ -35,6 +35,7 @@ create table member
     token_expired_date     datetime(6) comment '토큰 만료 일자',
     refresh_token          varchar(255) comment '리프레시 토큰',
     type                   varchar(255) comment '회원 권한',
+    follower_count         integer     default 0     not null comment '팔로워 수',
     creator_information_id bigint comment '크리에이터 정보 FK',
     primary key (member_id),
     constraint `email_uk` unique (email),

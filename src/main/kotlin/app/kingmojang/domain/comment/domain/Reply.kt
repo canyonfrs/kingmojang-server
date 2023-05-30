@@ -27,6 +27,7 @@ class Reply(
     val memo: Memo,
 
     @Lob
+    @Column(columnDefinition = "longtext")
     var content: String,
 
     var likeCount: Int,

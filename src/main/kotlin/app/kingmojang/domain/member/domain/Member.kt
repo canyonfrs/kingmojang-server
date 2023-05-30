@@ -1,5 +1,6 @@
 package app.kingmojang.domain.member.domain
 
+import app.kingmojang.domain.SoftDeletable
 import app.kingmojang.domain.member.dto.request.SignupRequest
 import jakarta.persistence.*
 import java.time.LocalDateTime
@@ -47,12 +48,7 @@ class Member(
 
     @Column(name = "created_at", nullable = false, updatable = false)
     val createdAt: LocalDateTime,
-
-    @Column(name = "deleted_at")
-    var deletedAt: LocalDateTime? = null,
-
-    var deleted: Boolean = false,
-) {
+) : SoftDeletable() {
     companion object {
         fun create(request: SignupRequest): Member {
             return Member(
@@ -79,6 +75,10 @@ class Member(
 
     fun createCreatorInformation(creatorInformation: CreatorInformation) {
         this.creatorInformation = creatorInformation
+    }
+
+    fun withdraw() {
+        this.delete()
     }
 }
 

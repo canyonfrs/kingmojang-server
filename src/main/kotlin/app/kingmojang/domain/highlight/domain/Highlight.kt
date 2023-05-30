@@ -10,6 +10,7 @@ class Highlight(
     val id: Long? = null,
 
     @Lob
+    @Column(columnDefinition = "mediumtext")
     val content: String,
 
     @Column(name = "start_x")

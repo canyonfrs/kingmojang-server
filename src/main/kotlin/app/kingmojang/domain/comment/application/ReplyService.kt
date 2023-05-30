@@ -50,7 +50,6 @@ class ReplyService(
         MemberIdValidator.validate(userPrincipal.getId(), reply.writer.id!!)
         reply.remove()
         replyLikeRepository.deleteAllByIdInBatch(replyLikeRepository.findAllByReplyId(replyId))
-        replyRepository.delete(reply)
     }
 
     @Transactional

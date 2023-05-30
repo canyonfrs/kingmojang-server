@@ -49,9 +49,8 @@ class CommentService(
     fun deleteComment(userPrincipal: UserPrincipal, commentId: Long) {
         val comment = commentRepository.findByIdOrNull(commentId) ?: throw NotFoundCommentException(commentId)
         MemberIdValidator.validate(userPrincipal.getId(), comment.writer.id!!)
-        comment.remove()
         commentLikeRepository.deleteAllByIdInBatch(commentLikeRepository.findAllByCommentId(commentId))
-        commentRepository.delete(comment)
+        comment.remove()
     }
 
     @Transactional(readOnly = true)

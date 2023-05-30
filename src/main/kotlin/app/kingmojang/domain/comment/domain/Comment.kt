@@ -1,5 +1,6 @@
 package app.kingmojang.domain.comment.domain
 
+import app.kingmojang.domain.SoftDeletable
 import app.kingmojang.domain.comment.dto.request.CommentRequest
 import app.kingmojang.domain.highlight.domain.Highlight
 import app.kingmojang.domain.member.domain.Member
@@ -38,7 +39,7 @@ class Comment(
 
     @Column(name = "updated_at", nullable = false)
     var updatedAt: LocalDateTime,
-) {
+) : SoftDeletable() {
     companion object {
         fun create(writer: Member, memo: Memo, request: CommentRequest): Comment {
             val now = LocalDateTime.now()
@@ -71,6 +72,7 @@ class Comment(
     fun decreaseLikeCount() = this.likeCount--
 
     fun remove() {
+        this.delete()
         this.memo.decreaseCommentCount()
     }
 }

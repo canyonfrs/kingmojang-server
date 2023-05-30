@@ -1,5 +1,6 @@
 package app.kingmojang.domain.memo.domain
 
+import app.kingmojang.domain.SoftDeletable
 import app.kingmojang.domain.member.domain.Member
 import app.kingmojang.domain.memo.dto.request.MemoRequest
 import jakarta.persistence.*
@@ -34,7 +35,7 @@ class Memo(
     var updatedAt: LocalDateTime,
 
     var version: Int = 0,
-) {
+) : SoftDeletable() {
     companion object {
         fun create(writer: Member, request: MemoRequest): Memo {
             val now = LocalDateTime.now()
@@ -73,6 +74,10 @@ class Memo(
 
     fun decreaseLikeCount() {
         this.likeCount--
+    }
+
+    fun remove() {
+        this.delete()
     }
 }
 

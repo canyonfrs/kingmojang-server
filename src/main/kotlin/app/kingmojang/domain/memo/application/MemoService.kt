@@ -70,7 +70,7 @@ class MemoService(
         val memo = memoRepository.findByIdOrNull(id) ?: throw NotFoundMemoException(id)
         MemberIdValidator.validate(userPrincipal.getId(), memo.writer.id!!)
         memoLikeRepository.deleteAllByIdInBatch(memoLikeRepository.findAllByMemoId(id))
-        memoRepository.delete(memo)
+        memo.remove()
     }
 
     @Transactional(readOnly = true)

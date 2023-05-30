@@ -11,7 +11,7 @@ class CreatorInformation(
     val id: Long? = null,
 
     @Lob
-    @Column
+    @Column(columnDefinition = "text")
     var introduce: String?,
 
     @Column(name = "banner_image")

@@ -18,7 +18,9 @@ class Memo(
     val writer: Member,
 
     var title: String,
+
     @Lob
+    @Column(columnDefinition = "longtext")
     var content: String,
 
     var likeCount: Int,

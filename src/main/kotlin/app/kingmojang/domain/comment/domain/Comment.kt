@@ -28,6 +28,7 @@ class Comment(
     var highlight: Highlight? = null,
 
     @Lob
+    @Column(columnDefinition = "longtext")
     var content: String,
 
     var likeCount: Int,

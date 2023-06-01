@@ -17,9 +17,13 @@ import javax.crypto.SecretKey
 class JwtUtils(
     authProperty: AuthProperty,
 ) {
-    private val secret = authProperty.secretKey
+    companion object {
+        const val ISSUER = "Kingmojang"
+        const val AUDIENCE = "www.kmj.app"
+    }
+
     private val tokenExpTime = authProperty.expTime
-    private val key: SecretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret))
+    private val key: SecretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(authProperty.secretKey))
 
     fun extractUsername(token: String): String {
         return extractClaim(token, Claims::getSubject)
@@ -31,13 +35,20 @@ class JwtUtils(
     }
 
     fun generateToken(userPrincipal: UserPrincipal): String {
-        return generateToken(mutableMapOf(), userPrincipal)
+        val extraClaim = mutableMapOf<String, Any?>(
+            "memberId" to userPrincipal.getId(),
+            "nickname" to userPrincipal.getNickname(),
+            "memberType" to userPrincipal.getMemberType(),
+        )
+        return generateToken(extraClaim, userPrincipal)
     }
 
     fun generateToken(extraClaims: MutableMap<String, Any?>, userPrincipal: UserPrincipal): String {
         val currentTime = System.currentTimeMillis()
         return Jwts.builder()
             .setClaims(extraClaims)
+            .setIssuer(ISSUER)
+            .setAudience(AUDIENCE)
             .setSubject(userPrincipal.username)
             .setIssuedAt(Date(currentTime))
             .setExpiration(Date(currentTime + tokenExpTime))

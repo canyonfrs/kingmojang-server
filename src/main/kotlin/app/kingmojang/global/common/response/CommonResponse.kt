@@ -28,6 +28,10 @@ data class CommonResponse<T>(
             return CommonResponse(FAIL, null, data)
         }
 
+        fun <T> fail(): CommonResponse<T> {
+            return CommonResponse(FAIL, null, null)
+        }
+
         fun error(message: String, data: ExceptionBody): CommonResponse<ExceptionBody> {
             return CommonResponse(ERROR, message, data)
         }

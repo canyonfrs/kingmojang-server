@@ -3,13 +3,11 @@ package app.kingmojang.domain.authenticationcode.api
 import app.kingmojang.domain.authenticationcode.application.AuthCodeService
 import app.kingmojang.domain.member.domain.UserPrincipal
 import app.kingmojang.global.common.response.CommonResponse
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.annotation.AuthenticationPrincipal
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 
 @RestController
@@ -31,5 +29,15 @@ class AuthCodeController(
             .buildAndExpand().toUri()
 
         return ResponseEntity.created(uri).body(CommonResponse.success())
+    }
+
+    @GetMapping("/auth-codes")
+    fun isValidAuthCode(
+        @RequestParam(defaultValue = "0") code: Int
+    ): ResponseEntity<CommonResponse<Void>> {
+        if (authCodeService.isValidAuthCode(code)) {
+            return ResponseEntity.accepted().body(CommonResponse.success())
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(CommonResponse.fail())
     }
 }

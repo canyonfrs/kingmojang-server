@@ -9,6 +9,7 @@ data class SignupRequest(
     @field:Email val email: String,
     @field:NotBlank val provider: String,
     @field:NotBlank val memberType: String,
-    val authCode: Int,
+    val code: String = "-1",
 ) {
+    val codeValue: Int = code.toInt()
 }

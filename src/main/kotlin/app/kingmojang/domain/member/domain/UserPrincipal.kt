@@ -33,6 +33,8 @@ class UserPrincipal(
 
     fun generateToken(): String = member.generateToken()
 
+    fun getMemberType(): MemberType = member.type
+
     override fun getName(): String = member.nickname
 
     override fun getAttributes(): MutableMap<String, Any> = this.attributes

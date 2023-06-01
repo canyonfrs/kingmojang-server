@@ -58,4 +58,9 @@ class AuthCodeServiceImpl(
         message.text = String.format("%08d", response.code)
         mailSender.send(message)
     }
+
+    override fun isValidAuthCode(code: Int): Boolean {
+        val authenticationCode = authCodeRepository.findByCode(code) ?: return false
+        return authenticationCode.isNotExpired()
+    }
 }

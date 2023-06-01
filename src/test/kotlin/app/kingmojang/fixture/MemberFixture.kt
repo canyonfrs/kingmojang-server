@@ -37,7 +37,7 @@ fun createSignupRequest(
         email,
         provider.toString(),
         memberType.toString(),
-        authCode
+        authCode.toString()
     )
 }
 

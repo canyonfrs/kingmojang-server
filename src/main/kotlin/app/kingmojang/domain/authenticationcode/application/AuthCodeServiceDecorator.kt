@@ -13,7 +13,7 @@ class AuthCodeServiceDecorator(
     @Qualifier("AuthCodeServiceImpl") private val authCodeService: AuthCodeService,
 ) : AuthCodeService {
 
-    override fun createAuthCode(userPrincipal: UserPrincipal, email:String): AuthCodeResponse {
+    override fun createAuthCode(userPrincipal: UserPrincipal, email: String): AuthCodeResponse {
         val response = authCodeService.createAuthCode(userPrincipal, email)
         sendAuthCodeToEmail(response)
         return response
@@ -23,4 +23,6 @@ class AuthCodeServiceDecorator(
     override fun sendAuthCodeToEmail(response: AuthCodeResponse) {
         authCodeService.sendAuthCodeToEmail(response)
     }
+
+    override fun isValidAuthCode(code: Int): Boolean = authCodeService.isValidAuthCode(code)
 }

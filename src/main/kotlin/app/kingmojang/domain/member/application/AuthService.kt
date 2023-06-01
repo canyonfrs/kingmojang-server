@@ -86,12 +86,12 @@ class AuthService(
     }
 
     private fun verifyAuthCode(request: SignupRequest) {
-        val authCode = authCodeRepository.findByCode(request.authCode)
-            ?: throw NotFoundAuthCodeException(request.authCode)
+        val authCode = authCodeRepository.findByCode(request.codeValue)
+            ?: throw NotFoundAuthCodeException(request.codeValue)
         if (authCode.isNotExpired()) {
             authCode.updateToExpire()
         } else {
-            throw ExpiredAuthCodeException(request.authCode)
+            throw ExpiredAuthCodeException(request.codeValue)
         }
     }
 }

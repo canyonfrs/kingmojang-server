@@ -25,4 +25,5 @@ enum class ErrorCodes(val status: HttpStatus, val description: String) {
     EXPIRED_JWT_TOKEN(HttpStatus.UNAUTHORIZED, "Access 토큰이 만료되었습니다."),
     INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "Refresh 토큰이 만료되었습니다."),
     INVALID_REDIRECT_URI(HttpStatus.INTERNAL_SERVER_ERROR, ""),
+    INVALID_FILE_TYPE(HttpStatus.BAD_REQUEST, ""),
 }

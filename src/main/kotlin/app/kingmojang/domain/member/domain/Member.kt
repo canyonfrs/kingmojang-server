@@ -1,8 +1,11 @@
 package app.kingmojang.domain.member.domain
 
 import app.kingmojang.domain.SoftDeletable
+import app.kingmojang.domain.member.dto.request.ChangePasswordRequest
 import app.kingmojang.domain.member.dto.request.SignupRequest
+import app.kingmojang.domain.member.exception.InvalidPasswordException
 import jakarta.persistence.*
+import org.springframework.security.crypto.password.PasswordEncoder
 import java.time.LocalDateTime
 import java.util.*
 
@@ -79,6 +82,21 @@ class Member(
 
     fun withdraw() {
         this.delete()
+    }
+
+    fun changePassword(passwordEncoder: PasswordEncoder, request: ChangePasswordRequest) {
+        if (this.password.isBlank() || passwordEncoder.matches(request.oldPassword, this.password)) {
+            this.password = passwordEncoder.encode(request.newPassword)
+        }
+        throw InvalidPasswordException()
+    }
+
+    fun changeNickname(newNickname: String) {
+        this.nickname = newNickname
+    }
+
+    fun changeProfileImage(s3Url: String) {
+        this.profileImage = s3Url
     }
 }
 

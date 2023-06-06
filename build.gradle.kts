@@ -49,6 +49,7 @@ dependencies {
     testImplementation("io.kotest.extensions:kotest-extensions-spring:1.1.3")
     testImplementation("com.ninja-squad:springmockk:4.0.2")
     implementation("org.flywaydb:flyway-mysql")
+    implementation("io.awspring.cloud:spring-cloud-aws-starter-s3:3.0.1")
 }
 
 noArg {

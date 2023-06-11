@@ -4,15 +4,17 @@ import app.kingmojang.domain.member.application.MemberService
 import app.kingmojang.domain.member.domain.MemberType
 import app.kingmojang.domain.member.repository.MemberRepository
 import app.kingmojang.fixture.*
+import app.kingmojang.global.util.S3Utils
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 
 class MemberServiceTest : BehaviorSpec({
     val memberRepository = mockk<MemberRepository>()
-
-    val memberService = MemberService(memberRepository)
+    val s3Utils = mockk<S3Utils>()
+    val memberService = MemberService(memberRepository, BCryptPasswordEncoder(), s3Utils)
 
     Given("중복되지 않은 닉네임이 주어진 경우") {
         every { memberRepository.existsByNicknameAndType(NICKNAME, MemberType.USER) } returns false

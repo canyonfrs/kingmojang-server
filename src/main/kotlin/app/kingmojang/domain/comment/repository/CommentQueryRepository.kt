@@ -5,6 +5,7 @@ import app.kingmojang.domain.comment.domain.QReply
 import app.kingmojang.domain.comment.dto.response.*
 import app.kingmojang.domain.like.domain.QCommentLike
 import app.kingmojang.domain.like.domain.QReplyLike
+import app.kingmojang.domain.member.domain.QMember
 import app.kingmojang.global.common.request.CommonPageRequest
 import com.querydsl.core.Tuple
 import com.querydsl.jpa.impl.JPAQueryFactory
@@ -79,6 +80,22 @@ class CommentQueryRepository(
         }
 
         return commentsMap.map { it.value }.toList()
+    }
+
+    fun readCommentsByMember(memberId: Long, request: CommonPageRequest): List<CommentResponse> {
+        val member = QMember.member
+        val comment = QComment.comment
+
+        val result = queryFactory
+            .select(comment).from(comment)
+            .leftJoin(member).on(comment.writer.eq(member))
+            .fetchJoin()
+            .where(member.id.eq(memberId).and(comment.deleted.isFalse))
+            .limit(request.size)
+            .offset(request.size * request.page)
+            .fetch()
+
+        return result.map { CommentResponse.of(it) }
     }
 
     private fun findAllByReplyIdsAndMemberEmail(replyIds: Set<Long>, email: String): MutableList<Long> {

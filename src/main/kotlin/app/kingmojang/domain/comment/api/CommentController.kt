@@ -62,4 +62,16 @@ class CommentController(
         val request = CommonPageRequest(size, page)
         return ResponseEntity.ok(CommonResponse.success(commentService.readComments(memoId, request)))
     }
+
+    @GetMapping("/members/{memberId}/comments")
+    fun readCommentsByMember(
+        @PathVariable memberId: Long,
+        @RequestParam(defaultValue = "20") size: Long,
+        @RequestParam(defaultValue = "0") page: Long,
+    ): ResponseEntity<CommonResponse<CommentsResponse>> {
+        val request = CommonPageRequest(size, page)
+        return ResponseEntity.ok(
+            CommonResponse.success(commentService.readCommentsByMember(memberId, request))
+        )
+    }
 }

@@ -74,4 +74,9 @@ class CommentService(
         commentLike.remove()
         commentLikeRepository.delete(commentLike)
     }
+
+    @Transactional(readOnly = true)
+    fun readCommentsByMember(memberId: Long, request: CommonPageRequest): CommentsResponse {
+        return CommentsResponse.of(commentQueryRepository.readCommentsByMember(memberId, request))
+    }
 }

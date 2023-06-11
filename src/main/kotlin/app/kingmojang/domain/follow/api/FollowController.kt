@@ -1,7 +1,9 @@
 package app.kingmojang.domain.follow.api
 
 import app.kingmojang.domain.follow.application.FollowService
+import app.kingmojang.domain.follow.dto.response.FollowResponse
 import app.kingmojang.domain.member.domain.UserPrincipal
+import app.kingmojang.global.common.request.CommonPageRequest
 import app.kingmojang.global.common.response.CommonResponse
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -41,4 +43,13 @@ class FollowController(
         return ResponseEntity.ok(CommonResponse.success())
     }
 
+    @GetMapping("/members/{memberId}/follows")
+    fun readFollowByFollower(
+        @PathVariable memberId: Long,
+        @RequestParam(defaultValue = "20") size: Long,
+        @RequestParam(defaultValue = "0") page: Long,
+    ): ResponseEntity<CommonResponse<List<FollowResponse>>> {
+        val request = CommonPageRequest(size, page)
+        return ResponseEntity.ok(CommonResponse.success(followService.readFollowByFollower(memberId, request)))
+    }
 }

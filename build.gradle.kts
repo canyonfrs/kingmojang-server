@@ -50,6 +50,7 @@ dependencies {
     testImplementation("com.ninja-squad:springmockk:4.0.2")
     implementation("org.flywaydb:flyway-mysql")
     implementation("io.awspring.cloud:spring-cloud-aws-starter-s3:3.0.1")
+    implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
 }
 
 noArg {

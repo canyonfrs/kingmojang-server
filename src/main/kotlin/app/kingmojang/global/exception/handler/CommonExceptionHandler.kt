@@ -5,12 +5,15 @@ import app.kingmojang.global.common.response.ExceptionBody
 import app.kingmojang.global.exception.CommonException
 import app.kingmojang.global.exception.ErrorCodes
 import app.kingmojang.global.exception.common.InvalidInputException
+import mu.KotlinLogging
 import org.springframework.http.HttpStatusCode
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.validation.BindException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
+
+private val logger = KotlinLogging.logger {}
 
 @RestControllerAdvice
 class CommonExceptionHandler {
@@ -35,17 +38,9 @@ class CommonExceptionHandler {
             .body(CommonResponse.error(e.message!!, ExceptionBody.of(ErrorCodes.BAD_CREDENTIAL_EXCEPTION)))
     }
 
-//    @ExceptionHandler(RuntimeException::class)
-//    fun onRuntimeException(e: RuntimeException): ResponseEntity<CommonResponse<ExceptionBody>> {
-//        e.printStackTrace()
-//        return postProcessError(
-//            CommonException(ErrorCodes.UNHANDLED_EXCEPTION, DEFAULT_ERROR_MESSAGE, e)
-//        )
-//    }
-
     @ExceptionHandler(Exception::class)
     fun onException(e: Exception): ResponseEntity<CommonResponse<ExceptionBody>> {
-        e.printStackTrace()
+        logger.error { "Exception: ${e.message}" }
         return postProcessError(
             CommonException(ErrorCodes.UNHANDLED_EXCEPTION, DEFAULT_ERROR_MESSAGE, e)
         )

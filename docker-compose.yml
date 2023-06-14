@@ -1,13 +1,16 @@
 version: "3.8"
 services:
   server:
-    image: kmj
+    build: .
     container_name: server
     restart: always
     ports:
       - "8080:8080"
     environment:
       USE_PROFILE: dev
+    env_file: .env
+    volumes:
+      - ./logs:/logs
     depends_on:
       - database
   database:

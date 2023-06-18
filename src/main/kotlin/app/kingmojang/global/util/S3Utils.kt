@@ -24,7 +24,9 @@ class S3Utils(
         }
     }
 
-    fun deleteFile(key: String) {
-        s3Operations.deleteObject(bucket, key)
+    fun deleteFile(s3Url: String) {
+        if (s3Url.isNotBlank()) {
+            s3Operations.deleteObject(s3Url)
+        }
     }
 }

@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 
 data class ReplyRequest(
-    @field:NotNull val memberId: Long,
     @field:NotBlank val content: String,
     @JsonInclude(JsonInclude.Include.NON_NULL) val emojiId: Long,
 ) {

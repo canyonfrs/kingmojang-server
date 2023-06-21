@@ -8,31 +8,22 @@ data class ReplyResponse(
     val writer: String,
     val content: String,
     val likeCount: Int,
-    val isLike: Boolean = false,
+    val deleted: Boolean,
+    val isLike: Boolean,
     val createdAt: LocalDateTime,
     val updatedAt: LocalDateTime,
 ) {
     companion object {
-        fun of(r: Reply): ReplyResponse {
+        fun of(reply: Reply, isLike: Boolean): ReplyResponse {
             return ReplyResponse(
-                id = r.id!!,
-                writer = r.writer.nickname,
-                content = r.content,
-                likeCount = r.likeCount,
-                createdAt = r.createdAt,
-                updatedAt = r.updatedAt
-            )
-        }
-
-        fun of(r: Reply, isLike: Boolean): ReplyResponse {
-            return ReplyResponse(
-                id = r.id!!,
-                writer = r.writer.nickname,
-                content = r.content,
-                likeCount = r.likeCount,
+                id = reply.id!!,
+                writer = reply.writer.nickname,
+                content = reply.content,
+                deleted = reply.deleted,
                 isLike = isLike,
-                createdAt = r.createdAt,
-                updatedAt = r.updatedAt
+                likeCount = reply.likeCount,
+                createdAt = reply.createdAt,
+                updatedAt = reply.updatedAt,
             )
         }
     }

@@ -4,8 +4,8 @@ import app.kingmojang.domain.comment.application.CommentService
 import app.kingmojang.domain.comment.dto.request.CommentRequest
 import app.kingmojang.domain.comment.dto.response.CommentsResponse
 import app.kingmojang.domain.member.domain.UserPrincipal
-import app.kingmojang.global.common.request.CommonPageRequest
 import app.kingmojang.global.common.response.CommonResponse
+import org.springframework.data.domain.PageRequest
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -24,7 +24,8 @@ class CommentController(
         @PathVariable memoId: Long,
         @RequestBody request: CommentRequest,
     ): ResponseEntity<CommonResponse<Long>> {
-        val commentId = commentService.createComment(userPrincipal, memoId, request)
+        val memberId = userPrincipal.getId()
+        val commentId = commentService.createComment(memoId, memberId, request)
 
         val uri = ServletUriComponentsBuilder
             .fromCurrentContextPath().path("/memos/${memoId}/comments/${commentId}")
@@ -33,14 +34,15 @@ class CommentController(
         return ResponseEntity.created(uri).body(CommonResponse.success(commentId))
     }
 
-    @PutMapping("/comments/{commentId}")
+    @PatchMapping("/comments/{commentId}")
     @PreAuthorize("hasRole({'USER', 'CREATOR'})")
     fun updateComment(
         @AuthenticationPrincipal userPrincipal: UserPrincipal,
         @PathVariable commentId: Long,
         @RequestBody request: CommentRequest,
     ): ResponseEntity<CommonResponse<Long>> {
-        return ResponseEntity.ok(CommonResponse.success(commentService.updateComment(userPrincipal, commentId, request)))
+        val memberId = userPrincipal.getId()
+        return ResponseEntity.ok(CommonResponse.success(commentService.updateComment(commentId, memberId, request)))
     }
 
     @DeleteMapping("/comments/{commentId}")
@@ -49,29 +51,31 @@ class CommentController(
         @AuthenticationPrincipal userPrincipal: UserPrincipal,
         @PathVariable commentId: Long,
     ): ResponseEntity<CommonResponse<Void>> {
-        commentService.deleteComment(userPrincipal, commentId)
+        val memberId = userPrincipal.getId()
+        commentService.deleteComment(commentId, memberId)
         return ResponseEntity.ok(CommonResponse.success())
     }
 
     @GetMapping("/memos/{memoId}/comments")
     fun readComments(
+        @AuthenticationPrincipal userPrincipal: UserPrincipal?,
         @PathVariable memoId: Long,
-        @RequestParam(defaultValue = "20") size: Long,
-        @RequestParam(defaultValue = "0") page: Long,
+        @RequestParam(defaultValue = "0") page: Int,
+        @RequestParam(defaultValue = "20") size: Int,
+        @RequestParam(defaultValue = "created_at_asc") sort: String,
     ): ResponseEntity<CommonResponse<CommentsResponse>> {
-        val request = CommonPageRequest(size, page)
-        return ResponseEntity.ok(CommonResponse.success(commentService.readComments(memoId, request)))
+        val memberId = userPrincipal?.getId()
+        val request = PageRequest.of(page, size, CommentSortType.of(sort).getSort())
+        return ResponseEntity.ok(CommonResponse.success(commentService.readComments(memoId, memberId, request)))
     }
 
     @GetMapping("/members/{memberId}/comments")
     fun readCommentsByMember(
         @PathVariable memberId: Long,
-        @RequestParam(defaultValue = "20") size: Long,
-        @RequestParam(defaultValue = "0") page: Long,
+        @RequestParam(defaultValue = "0") page: Int,
+        @RequestParam(defaultValue = "20") size: Int,
     ): ResponseEntity<CommonResponse<CommentsResponse>> {
-        val request = CommonPageRequest(size, page)
-        return ResponseEntity.ok(
-            CommonResponse.success(commentService.readCommentsByMember(memberId, request))
-        )
+        val request = PageRequest.of(page, size)
+        return ResponseEntity.ok(CommonResponse.success(commentService.readCommentsByMember(memberId, request)))
     }
 }

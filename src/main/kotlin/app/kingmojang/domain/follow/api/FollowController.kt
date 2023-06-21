@@ -2,9 +2,11 @@ package app.kingmojang.domain.follow.api
 
 import app.kingmojang.domain.follow.application.FollowService
 import app.kingmojang.domain.follow.dto.response.FollowResponse
+import app.kingmojang.domain.follow.dto.response.FollowsResponse
 import app.kingmojang.domain.member.domain.UserPrincipal
 import app.kingmojang.global.common.request.CommonPageRequest
 import app.kingmojang.global.common.response.CommonResponse
+import org.springframework.data.domain.PageRequest
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -23,7 +25,10 @@ class FollowController(
         @PathVariable followerId: Long,
         @PathVariable creatorId: Long,
     ): ResponseEntity<CommonResponse<Long>> {
-        val followId = followService.createFollow(userPrincipal, followerId, creatorId)
+        if (!userPrincipal.isValidMember(followerId)) {
+            throw IllegalStateException("The member id is not equal to the user id.")
+        }
+        val followId = followService.createFollow(followerId, creatorId)
 
         val uri = ServletUriComponentsBuilder
             .fromCurrentContextPath().path("/follows/${followId}")
@@ -39,17 +44,20 @@ class FollowController(
         @PathVariable followerId: Long,
         @PathVariable creatorId: Long,
     ): ResponseEntity<CommonResponse<Void>> {
-        followService.deleteFollow(userPrincipal, followerId, creatorId)
+        if (!userPrincipal.isValidMember(followerId)) {
+            throw IllegalStateException("The member id is not equal to the user id.")
+        }
+        followService.deleteFollow(followerId, creatorId)
         return ResponseEntity.ok(CommonResponse.success())
     }
 
     @GetMapping("/members/{memberId}/follows")
     fun readFollowByFollower(
         @PathVariable memberId: Long,
-        @RequestParam(defaultValue = "20") size: Long,
-        @RequestParam(defaultValue = "0") page: Long,
-    ): ResponseEntity<CommonResponse<List<FollowResponse>>> {
-        val request = CommonPageRequest(size, page)
+        @RequestParam(defaultValue = "0") page: Int,
+        @RequestParam(defaultValue = "20") size: Int,
+    ): ResponseEntity<CommonResponse<FollowsResponse>> {
+        val request = PageRequest.of(page, size)
         return ResponseEntity.ok(CommonResponse.success(followService.readFollowByFollower(memberId, request)))
     }
 }

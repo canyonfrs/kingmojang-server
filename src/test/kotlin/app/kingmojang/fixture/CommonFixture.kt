@@ -1,13 +1,12 @@
 package app.kingmojang.fixture
 
-import app.kingmojang.global.common.request.CommonPageRequest
+import org.springframework.data.domain.PageRequest
 
-const val SIZE = 10L
-const val PAGE = 0L
+const val PAGE = 0
+const val DEFAULT_PAGINATION_SIZE = 10
+const val MEMO_PAGINATION_SIZE = 10
+const val COMMENT_PAGINATION_SIZE = 20
 
-fun createCommonPageRequest(
-    size: Long = SIZE,
-    page: Long = PAGE
-): CommonPageRequest {
-    return CommonPageRequest(size, page)
+fun createPageRequest(page: Int = PAGE, size: Int = DEFAULT_PAGINATION_SIZE): PageRequest {
+    return PageRequest.of(page, size)
 }

@@ -58,7 +58,8 @@ class Comment(
         }
     }
 
-    fun update(request: CommentRequest): Comment {
+    fun update(memberId: Long, request: CommentRequest): Comment {
+        if (isWriter(memberId).not()) throw IllegalArgumentException("작성자만 수정할 수 있습니다.")
         this.content = request.content
         this.updatedAt = LocalDateTime.now()
         return this
@@ -66,14 +67,25 @@ class Comment(
 
     fun increaseReplyCount() = this.replyCount++
 
-    fun decreaseReplyCount() = this.replyCount--
+    fun decreaseReplyCount() {
+        if (this.replyCount > 0) {
+            this.replyCount--
+        }
+    }
 
     fun increaseLikeCount() = this.likeCount++
 
-    fun decreaseLikeCount() = this.likeCount--
+    fun decreaseLikeCount() {
+        if (this.likeCount > 0) {
+            this.likeCount--
+        }
+    }
 
-    fun remove() {
+    fun remove(memberId: Long) {
+        if (isWriter(memberId).not()) throw IllegalArgumentException("작성자만 삭제할 수 있습니다.")
         this.delete()
         this.memo.decreaseCommentCount()
     }
+
+    private fun isWriter(memberId: Long) = this.writer.id == memberId
 }

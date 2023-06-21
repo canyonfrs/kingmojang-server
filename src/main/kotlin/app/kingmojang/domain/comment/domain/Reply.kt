@@ -56,16 +56,24 @@ class Reply(
 
     fun increaseLikeCount() = this.likeCount++
 
-    fun decreaseLikeCount() = this.likeCount--
+    fun decreaseLikeCount() {
+        if (this.likeCount > 0) {
+            this.likeCount--
+        }
+    }
 
-    fun update(request: ReplyRequest): Reply {
+    fun update(memberId: Long, request: ReplyRequest): Reply {
+        if (isWriter(memberId).not()) throw IllegalArgumentException("작성자만 수정할 수 있습니다.")
         this.content = request.content
         this.updatedAt = LocalDateTime.now()
         return this
     }
 
-    fun remove() {
+    fun remove(memberId: Long) {
+        if (isWriter(memberId).not()) throw IllegalArgumentException("작성자만 삭제할 수 있습니다.")
         this.delete()
         this.comment.decreaseReplyCount()
     }
+
+    private fun isWriter(memberId: Long) = this.writer.id == memberId
 }

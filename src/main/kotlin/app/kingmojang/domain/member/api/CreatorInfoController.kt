@@ -11,6 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
+import java.lang.IllegalStateException
 
 @RestController
 @RequestMapping("/api/v1/members")
@@ -25,7 +26,10 @@ class CreatorInfoController(
         @PathVariable memberId: Long,
         @RequestBody @Valid request: CreatorInformationRequest,
     ): ResponseEntity<CommonResponse<Long>> {
-        val creatorInfoId = creatorInfoService.createCreatorInfo(userPrincipal, memberId, request)
+          if (!userPrincipal.isValidMember(memberId)) {
+            throw IllegalStateException("The member id is not equal to the user id.")
+        }
+        val creatorInfoId = creatorInfoService.createCreatorInfo(memberId, request)
 
         val uri = ServletUriComponentsBuilder
             .fromCurrentContextPath().path("/members/$memberId/creator-infos/$creatorInfoId").buildAndExpand().toUri()
@@ -40,16 +44,20 @@ class CreatorInfoController(
         @PathVariable memberId: Long,
         @RequestBody @Valid request: CreatorInformationRequest,
     ): ResponseEntity<CommonResponse<Long>> {
-        val creatorInfoId = creatorInfoService.updateCreatorInfo(userPrincipal, memberId, request)
+        if (!userPrincipal.isValidMember(memberId)) {
+            throw IllegalStateException("The member id is not equal to the user id.")
+        }
+        val creatorInfoId = creatorInfoService.updateCreatorInfo(memberId, request)
         return ResponseEntity.ok().body(CommonResponse.success(creatorInfoId))
     }
 
     @GetMapping("/{memberId}/creator-infos")
     fun readCreatorInformation(
         @AuthenticationPrincipal userPrincipal: UserPrincipal?,
-        @PathVariable memberId: Long,
+        @PathVariable(value = "memberId") creatorId: Long,
     ): ResponseEntity<CommonResponse<CreatorInfoResponse>> {
-        val creatorInfo = creatorInfoService.readCreatorInformation(userPrincipal, memberId)
+        val memberId = userPrincipal?.getId()
+        val creatorInfo = creatorInfoService.readCreatorInformation(memberId, creatorId)
         return ResponseEntity.ok().body(CommonResponse.success(creatorInfo))
     }
 }

@@ -2,6 +2,7 @@ package app.kingmojang.domain.memo.domain
 
 import app.kingmojang.domain.SoftDeletable
 import app.kingmojang.domain.member.domain.Member
+import app.kingmojang.domain.member.domain.UserPrincipal
 import app.kingmojang.domain.memo.dto.request.MemoRequest
 import jakarta.persistence.*
 import java.time.LocalDateTime
@@ -54,11 +55,12 @@ class Memo(
         }
     }
 
-    fun update(request: MemoRequest): Memo {
+    fun update(memberId: Long, request: MemoRequest): Memo {
+        if (isWriter(memberId).not()) throw IllegalArgumentException("작성자만 수정할 수 있습니다.")
         this.title = request.title
         this.content = request.content
-        this.font = Font.of(request)
         this.updatedAt = LocalDateTime.now()
+        updateFont(request.fontName, request.fontStyle, request.fontSize)
         return this
     }
 
@@ -67,7 +69,9 @@ class Memo(
     }
 
     fun decreaseCommentCount() {
-        this.commentCount--
+        if (commentCount > 0) {
+            this.commentCount--
+        }
     }
 
     fun increaseLikeCount() {
@@ -75,12 +79,22 @@ class Memo(
     }
 
     fun decreaseLikeCount() {
-        this.likeCount--
+        if (likeCount > 0) {
+            this.likeCount--
+        }
     }
 
-    fun remove() {
+    fun updateFont(name: String, style: String, size: Int) {
+        this.font = Font.create(name, style, size)
+    }
+
+    fun remove(memberId: Long) {
+        if (isWriter(memberId).not()) throw IllegalArgumentException("작성자만 삭제할 수 있습니다.")
+
         this.delete()
     }
+
+    private fun isWriter(memberId: Long) = this.writer.id == memberId
 }
 
 @Embeddable
@@ -100,6 +114,14 @@ data class Font(
                 name = request.fontName,
                 style = request.fontStyle,
                 size = request.fontSize,
+            )
+        }
+
+        fun create(name: String, style: String, size: Int): Font {
+            return Font(
+                name = name,
+                style = style,
+                size = size,
             )
         }
     }

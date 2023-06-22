@@ -4,6 +4,7 @@ import app.kingmojang.domain.SoftDeletable
 import app.kingmojang.domain.member.dto.request.ChangePasswordRequest
 import app.kingmojang.domain.member.dto.request.SignupRequest
 import app.kingmojang.domain.member.exception.InvalidPasswordException
+import app.kingmojang.domain.member.exception.NotCreatorException
 import app.kingmojang.global.exception.common.FileTypeException
 import app.kingmojang.global.util.S3Utils
 import jakarta.persistence.*
@@ -81,7 +82,7 @@ class Member(
 
     fun createCreatorInformation(creatorInformation: CreatorInformation) {
         if (!isCreator()) {
-            throw IllegalStateException("Member is not creator")
+            throw NotCreatorException(this.id!!)
         }
         this.creatorInformation = creatorInformation
     }

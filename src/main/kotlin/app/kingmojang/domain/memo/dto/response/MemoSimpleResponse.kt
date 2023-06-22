@@ -1,10 +1,9 @@
 package app.kingmojang.domain.memo.dto.response
 
-import app.kingmojang.domain.comment.dto.response.CommentsResponse
 import app.kingmojang.domain.memo.domain.Memo
 import java.time.LocalDateTime
 
-data class MemoResponse(
+data class MemoSimpleResponse(
     val id: Long,
     val title: String,
     val writer: String,
@@ -16,13 +15,11 @@ data class MemoResponse(
     val fontName: String,
     val fontStyle: String,
     val fontSize: Int,
-    val isFollow: Boolean,
     val isLike: Boolean,
-    val commentsResponse: CommentsResponse
 ) {
     companion object {
-        fun of(memo: Memo, isLike: Boolean, isFollow: Boolean, commentsResponse: CommentsResponse): MemoResponse {
-            return MemoResponse(
+        fun of(memo: Memo, isLike: Boolean): MemoSimpleResponse {
+            return MemoSimpleResponse(
                 memo.id!!,
                 memo.title,
                 memo.writer.nickname,
@@ -34,9 +31,7 @@ data class MemoResponse(
                 memo.font.name,
                 memo.font.style,
                 memo.font.size,
-                isFollow,
-                isLike,
-                commentsResponse
+                isLike
             )
         }
     }

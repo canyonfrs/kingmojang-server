@@ -4,8 +4,11 @@ import app.kingmojang.domain.SoftDeletable
 import app.kingmojang.domain.member.dto.request.ChangePasswordRequest
 import app.kingmojang.domain.member.dto.request.SignupRequest
 import app.kingmojang.domain.member.exception.InvalidPasswordException
+import app.kingmojang.global.exception.common.FileTypeException
+import app.kingmojang.global.util.S3Utils
 import jakarta.persistence.*
 import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.web.multipart.MultipartFile
 import java.time.LocalDateTime
 import java.util.*
 
@@ -77,6 +80,9 @@ class Member(
     fun decreaseFollowerCount() = this.followerCount--
 
     fun createCreatorInformation(creatorInformation: CreatorInformation) {
+        if (!isCreator()) {
+            throw IllegalStateException("Member is not creator")
+        }
         this.creatorInformation = creatorInformation
     }
 
@@ -95,9 +101,22 @@ class Member(
         this.nickname = newNickname
     }
 
-    fun changeProfileImage(s3Url: String) {
-        this.profileImage = s3Url
+    fun changeProfileImage(s3Util: S3Utils, image: MultipartFile?): String {
+        val fileName = "${UUID.nameUUIDFromBytes(email.toByteArray())}/profile"
+        if (image == null || image.isEmpty) {
+            this.profileImage = ""
+        } else if (canUploadImage(image)) {
+            this.profileImage = s3Util.uploadFile(fileName, image)
+        } else {
+            throw FileTypeException(image.originalFilename ?: "Image")
+        }
+        return this.profileImage
     }
+
+    fun isCreator() = this.type == MemberType.CREATOR
+
+    private fun canUploadImage(image: MultipartFile) =
+        (image.contentType == "image/jpeg" || image.contentType == "image/png" || image.contentType == "image/gif")
 }
 
 @Embeddable

@@ -35,6 +35,8 @@ class UserPrincipal(
 
     fun getMemberType(): MemberType = member.type
 
+    fun isValidMember(memberId: Long) = member.id == memberId
+
     override fun getName(): String = member.nickname
 
     override fun getAttributes(): MutableMap<String, Any> = this.attributes

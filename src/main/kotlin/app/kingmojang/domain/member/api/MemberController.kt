@@ -7,9 +7,8 @@ import app.kingmojang.domain.member.dto.request.ChangePasswordRequest
 import app.kingmojang.domain.member.dto.response.ChangeProfileImageResponse
 import app.kingmojang.domain.memo.application.MemoService
 import app.kingmojang.domain.memo.dto.response.MemosResponse
-import app.kingmojang.global.common.request.NoOffsetPageRequest
 import app.kingmojang.global.common.response.CommonResponse
-import jakarta.validation.constraints.Positive
+import org.springframework.data.domain.PageRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -50,7 +49,10 @@ class MemberController(
         @PathVariable memberId: Long,
         @RequestBody request: ChangePasswordRequest,
     ): ResponseEntity<CommonResponse<Void>> {
-        memberService.changePassword(userPrincipal, memberId, request)
+        if (!userPrincipal.isValidMember(memberId)) {
+            throw IllegalStateException("The member id is not equal to the user id.")
+        }
+        memberService.changePassword(memberId, request)
         return ResponseEntity.noContent().build()
     }
 
@@ -61,7 +63,10 @@ class MemberController(
         @PathVariable memberId: Long,
         @RequestBody request: ChangeNicknameRequest,
     ): ResponseEntity<CommonResponse<Void>> {
-        memberService.changeNickname(userPrincipal, memberId, request)
+        if (!userPrincipal.isValidMember(memberId)) {
+            throw IllegalStateException("The member id is not equal to the user id.")
+        }
+        memberService.changeNickname(memberId, userPrincipal.getMemberType(), request)
         return ResponseEntity.noContent().build()
     }
 
@@ -72,20 +77,10 @@ class MemberController(
         @PathVariable memberId: Long,
         @RequestPart(required = false) image: MultipartFile?,
     ): ResponseEntity<CommonResponse<ChangeProfileImageResponse>> {
-        val response = memberService.changeProfileImage(userPrincipal, memberId, image)
+        if (!userPrincipal.isValidMember(memberId)) {
+            throw IllegalStateException("The member id is not equal to the user id.")
+        }
+        val response = memberService.changeProfileImage(memberId, image)
         return ResponseEntity.ok(CommonResponse.success(response))
-    }
-
-    @GetMapping("/{memberId}/memos")
-    fun readMemosWrittenByMember(
-        @PathVariable memberId: Long,
-        @RequestParam @Positive timestamp: Long?,
-        @RequestParam(defaultValue = "10") size: Int,
-    ): ResponseEntity<CommonResponse<MemosResponse>> {
-        return ResponseEntity.ok(
-            CommonResponse.success(
-                memoService.readMemosWrittenByMember(memberId, NoOffsetPageRequest.of(timestamp, size))
-            )
-        )
     }
 }

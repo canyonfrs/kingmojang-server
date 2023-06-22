@@ -20,7 +20,7 @@ class AuthCodeControllerTest : RestControllerTest() {
     private lateinit var authCodeService: AuthCodeService
 
     @Test
-    @WithMockCustomUser(MemberType.ADMIN)
+    @WithMockCustomUser(type =  MemberType.ADMIN)
     fun `성공적으로 인증코드를 생성한다`() {
         every { authCodeService.createAuthCode(any(), EMAIL) } returns createAuthCodeResponse()
 

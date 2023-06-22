@@ -4,6 +4,7 @@ import app.kingmojang.domain.SoftDeletable
 import app.kingmojang.domain.comment.dto.request.ReplyRequest
 import app.kingmojang.domain.member.domain.Member
 import app.kingmojang.domain.memo.domain.Memo
+import app.kingmojang.global.exception.common.NotWriterException
 import jakarta.persistence.*
 import java.time.LocalDateTime
 
@@ -63,14 +64,18 @@ class Reply(
     }
 
     fun update(memberId: Long, request: ReplyRequest): Reply {
-        if (isWriter(memberId).not()) throw IllegalArgumentException("작성자만 수정할 수 있습니다.")
+        if (!isWriter(memberId)) {
+            throw NotWriterException(memberId)
+        }
         this.content = request.content
         this.updatedAt = LocalDateTime.now()
         return this
     }
 
     fun remove(memberId: Long) {
-        if (isWriter(memberId).not()) throw IllegalArgumentException("작성자만 삭제할 수 있습니다.")
+        if (!isWriter(memberId)) {
+            throw NotWriterException(memberId)
+        }
         this.delete()
         this.comment.decreaseReplyCount()
     }

@@ -4,6 +4,7 @@ import app.kingmojang.domain.SoftDeletable
 import app.kingmojang.domain.member.domain.Member
 import app.kingmojang.domain.member.domain.UserPrincipal
 import app.kingmojang.domain.memo.dto.request.MemoRequest
+import app.kingmojang.global.exception.common.NotWriterException
 import jakarta.persistence.*
 import java.time.LocalDateTime
 
@@ -56,7 +57,9 @@ class Memo(
     }
 
     fun update(memberId: Long, request: MemoRequest): Memo {
-        if (isWriter(memberId).not()) throw IllegalArgumentException("작성자만 수정할 수 있습니다.")
+        if (!isWriter(memberId)) {
+            throw NotWriterException(memberId)
+        }
         this.title = request.title
         this.content = request.content
         this.updatedAt = LocalDateTime.now()
@@ -89,8 +92,9 @@ class Memo(
     }
 
     fun remove(memberId: Long) {
-        if (isWriter(memberId).not()) throw IllegalArgumentException("작성자만 삭제할 수 있습니다.")
-
+        if (!isWriter(memberId)) {
+            throw NotWriterException(memberId)
+        }
         this.delete()
     }
 

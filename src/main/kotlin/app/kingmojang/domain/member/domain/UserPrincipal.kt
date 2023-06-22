@@ -1,5 +1,6 @@
 package app.kingmojang.domain.member.domain
 
+import app.kingmojang.global.exception.common.InvalidMemberException
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
@@ -35,7 +36,12 @@ class UserPrincipal(
 
     fun getMemberType(): MemberType = member.type
 
-    fun isValidMember(memberId: Long) = member.id == memberId
+    fun isValidMember(memberId: Long): Boolean {
+        if (member.id != memberId) {
+            throw InvalidMemberException(memberId)
+        }
+        return true
+    }
 
     override fun getName(): String = member.nickname
 

@@ -1,10 +1,8 @@
 package app.kingmojang.domain.follow.api
 
 import app.kingmojang.domain.follow.application.FollowService
-import app.kingmojang.domain.follow.dto.response.FollowResponse
 import app.kingmojang.domain.follow.dto.response.FollowsResponse
 import app.kingmojang.domain.member.domain.UserPrincipal
-import app.kingmojang.global.common.request.CommonPageRequest
 import app.kingmojang.global.common.response.CommonResponse
 import org.springframework.data.domain.PageRequest
 import org.springframework.http.ResponseEntity
@@ -25,9 +23,7 @@ class FollowController(
         @PathVariable followerId: Long,
         @PathVariable creatorId: Long,
     ): ResponseEntity<CommonResponse<Long>> {
-        if (!userPrincipal.isValidMember(followerId)) {
-            throw IllegalStateException("The member id is not equal to the user id.")
-        }
+        userPrincipal.isValidMember(followerId)
         val followId = followService.createFollow(followerId, creatorId)
 
         val uri = ServletUriComponentsBuilder
@@ -44,9 +40,7 @@ class FollowController(
         @PathVariable followerId: Long,
         @PathVariable creatorId: Long,
     ): ResponseEntity<CommonResponse<Void>> {
-        if (!userPrincipal.isValidMember(followerId)) {
-            throw IllegalStateException("The member id is not equal to the user id.")
-        }
+        userPrincipal.isValidMember(followerId)
         followService.deleteFollow(followerId, creatorId)
         return ResponseEntity.ok(CommonResponse.success())
     }

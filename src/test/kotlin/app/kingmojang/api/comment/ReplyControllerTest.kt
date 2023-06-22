@@ -23,7 +23,7 @@ class ReplyControllerTest : RestControllerTest() {
     private lateinit var replyService: ReplyService
 
     @Test
-    @WithMockCustomUser(MemberType.USER)
+    @WithMockCustomUser(type = MemberType.USER)
     fun `성공적으로 답글을 등록한다`() {
         every { replyService.createReply(any(), MEMO_ID, COMMENT_ID, any()) } returns REPLY_ID
 
@@ -38,7 +38,7 @@ class ReplyControllerTest : RestControllerTest() {
     }
 
     @Test
-    @WithMockCustomUser(MemberType.USER)
+    @WithMockCustomUser(type = MemberType.USER)
     fun `성공적으로 답글을 수정한다`() {
         every { replyService.updateReply(any(), REPLY_ID, any()) } returns REPLY_ID
 
@@ -52,7 +52,7 @@ class ReplyControllerTest : RestControllerTest() {
     }
 
     @Test
-    @WithMockCustomUser(MemberType.USER)
+    @WithMockCustomUser(type = MemberType.USER)
     fun `성공적으로 답글을 삭제한다`() {
         every { replyService.deleteReply(any(), REPLY_ID) } just Runs
 

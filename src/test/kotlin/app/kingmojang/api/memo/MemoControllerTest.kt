@@ -12,6 +12,7 @@ import io.mockk.every
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.test.web.servlet.get
+import org.springframework.test.web.servlet.patch
 import org.springframework.test.web.servlet.post
 import org.springframework.test.web.servlet.put
 
@@ -39,7 +40,7 @@ class MemoControllerTest : RestControllerTest() {
     fun `성공적으로 메모를 수정한다`() {
         every { memoService.updateMemo(any(), MEMO_ID, any()) } returns MEMO_ID
 
-        mockMvc.put("/api/v1/memos/$MEMO_ID") {
+        mockMvc.patch("/api/v1/memos/$MEMO_ID") {
             bearer(ACCESS_TOKEN)
             jsonContent(createMemoRequest())
         }.andExpect {
@@ -51,7 +52,7 @@ class MemoControllerTest : RestControllerTest() {
     @Test
     fun `비회원으로 성공적으로 메모를 조회한다`() {
         val response = createMemoResponse()
-        every { memoService.readMemo(MEMO_ID, any()) } returns response
+        every { memoService.readMemo(MEMO_ID, null, any()) } returns response
 
         mockMvc.get("/api/v1/memos/$MEMO_ID") {
         }.andExpect {
@@ -61,10 +62,10 @@ class MemoControllerTest : RestControllerTest() {
     }
 
     @Test
-    @WithMockCustomUser(MemberType.USER)
+    @WithMockCustomUser(type = MemberType.USER)
     fun `회원으로 성공적으로 메모를 조회한다`() {
         val response = createMemoResponse(isLike = true)
-        every { memoService.readMemoWithUsername(any(), MEMO_ID, any()) } returns response
+        every { memoService.readMemo(MEMO_ID, MEMBER_ID, any()) } returns response
 
         mockMvc.get("/api/v1/memos/$MEMO_ID") {
             bearer(ACCESS_TOKEN)
@@ -77,7 +78,9 @@ class MemoControllerTest : RestControllerTest() {
     @Test
     fun `성공적으로 최근 업데이트된 메모장을 조회한다`() {
         val response = createMemosResponse()
-        every { memoService.readMemosInUpdatedOrder(5) } returns response
+        every {
+            memoService.readMemosInUpdatedOrder(null, any())
+        } returns response
 
         mockMvc.get("/api/v1/memos") {
         }.andExpect {

@@ -23,7 +23,7 @@ class CreatorInfoControllerTest : RestControllerTest() {
     @Test
     @WithMockCustomUser
     fun `성공적으로 크리에이터 회원의 정보를 입력한다`() {
-        every { creatorInfoService.createCreatorInfo(any(), MEMBER_ID, any()) } returns CREATOR_INFO_ID
+        every { creatorInfoService.createCreatorInfo(MEMBER_ID, any()) } returns CREATOR_INFO_ID
 
         mockMvc.post("/api/v1/members/$MEMBER_ID/creator-infos") {
             jsonContent(createCreatorInfoRequest())
@@ -37,7 +37,7 @@ class CreatorInfoControllerTest : RestControllerTest() {
     @Test
     @WithMockCustomUser
     fun `성공적으로 크리에이터 회원의 정보를 수정한다`() {
-        every { creatorInfoService.updateCreatorInfo(any(), MEMBER_ID, any()) } returns CREATOR_INFO_ID
+        every { creatorInfoService.updateCreatorInfo(MEMBER_ID, any()) } returns CREATOR_INFO_ID
 
         mockMvc.put("/api/v1/members/$MEMBER_ID/creator-infos") {
             jsonContent(createCreatorInfoRequest())
@@ -51,7 +51,7 @@ class CreatorInfoControllerTest : RestControllerTest() {
     @Test
     fun `성공적으로 크리에이터 회원의 정보를 조회한다`() {
         val response = createCreatorInfoResponse()
-        every { creatorInfoService.readCreatorInformation(any(), MEMBER_ID) } returns response
+        every { creatorInfoService.readCreatorInformation(null, MEMBER_ID) } returns response
 
         mockMvc.get("/api/v1/members/$MEMBER_ID/creator-infos") {
         }.andExpect {

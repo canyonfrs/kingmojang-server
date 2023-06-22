@@ -31,9 +31,9 @@ class LikeControllerTest : RestControllerTest() {
     @Test
     @WithMockCustomUser
     fun `성공적으로 메모에 좋아요를 등록한다`() {
-        every { memoService.increaseMemoLikeCount(any(), MEMO_ID, MEMBER_ID) } returns MEMO_LIKE_ID
+        every { memoService.increaseMemoLikeCount(MEMO_ID, MEMBER_ID) } returns MEMO_LIKE_ID
 
-        mockMvc.post("/api/v1/memos/$MEMO_ID/like") {
+        mockMvc.post("/api/v1/memos/$MEMO_ID/likes") {
             bearer(ACCESS_TOKEN)
             param("memberId", MEMBER_ID.toString())
         }.andExpect {
@@ -46,9 +46,9 @@ class LikeControllerTest : RestControllerTest() {
     @Test
     @WithMockCustomUser
     fun `성공적으로 메모에 좋아요를 취소한다`() {
-        every { memoService.decreaseMemoLikeCount(any(), MEMO_ID, MEMBER_ID) } just Runs
+        every { memoService.decreaseMemoLikeCount(MEMO_ID, MEMBER_ID) } just Runs
 
-        mockMvc.delete("/api/v1/memos/$MEMO_ID/like") {
+        mockMvc.delete("/api/v1/memos/$MEMO_ID/likes") {
             bearer(ACCESS_TOKEN)
             param("memberId", MEMBER_ID.toString())
         }.andExpect {
@@ -60,9 +60,9 @@ class LikeControllerTest : RestControllerTest() {
     @Test
     @WithMockCustomUser
     fun `성공적으로 댓글에 좋아요를 등록한다`() {
-        every { commentService.increaseCommentLikeCount(any(), COMMENT_ID, MEMBER_ID) } returns COMMENT_LIKE_ID
+        every { commentService.increaseCommentLikeCount(COMMENT_ID, MEMBER_ID) } returns COMMENT_LIKE_ID
 
-        mockMvc.post("/api/v1/comments/$COMMENT_ID/like") {
+        mockMvc.post("/api/v1/comments/$COMMENT_ID/likes") {
             bearer(ACCESS_TOKEN)
             param("memberId", MEMBER_ID.toString())
         }.andExpect {
@@ -75,9 +75,9 @@ class LikeControllerTest : RestControllerTest() {
     @Test
     @WithMockCustomUser
     fun `성공적으로 댓글에 좋아요를 취소한다`() {
-        every { commentService.decreaseCommentLikeCount(any(), COMMENT_ID, MEMBER_ID) } just Runs
+        every { commentService.decreaseCommentLikeCount(COMMENT_ID, MEMBER_ID) } just Runs
 
-        mockMvc.delete("/api/v1/comments/$COMMENT_ID/like") {
+        mockMvc.delete("/api/v1/comments/$COMMENT_ID/likes") {
             bearer(ACCESS_TOKEN)
             param("memberId", MEMBER_ID.toString())
         }.andExpect {
@@ -89,9 +89,9 @@ class LikeControllerTest : RestControllerTest() {
     @Test
     @WithMockCustomUser
     fun `성공적으로 답글에 좋아요를 등록한다`() {
-        every { replyService.increaseReplyLikeCount(any(), REPLY_ID, MEMBER_ID) } returns REPLY_ID
+        every { replyService.increaseReplyLikeCount(REPLY_ID, MEMBER_ID) } returns REPLY_ID
 
-        mockMvc.post("/api/v1/replies/$REPLY_ID/like") {
+        mockMvc.post("/api/v1/replies/$REPLY_ID/likes") {
             bearer(ACCESS_TOKEN)
             param("memberId", MEMBER_ID.toString())
         }.andExpect {
@@ -104,9 +104,9 @@ class LikeControllerTest : RestControllerTest() {
     @Test
     @WithMockCustomUser
     fun `성공적으로 답글에 좋아요를 취소한다`() {
-        every { replyService.decreaseReplyLikeCount(any(), REPLY_ID, MEMBER_ID) } just Runs
+        every { replyService.decreaseReplyLikeCount(REPLY_ID, MEMBER_ID) } just Runs
 
-        mockMvc.delete("/api/v1/replies/$REPLY_ID/like") {
+        mockMvc.delete("/api/v1/replies/$REPLY_ID/likes") {
             bearer(ACCESS_TOKEN)
             param("memberId", MEMBER_ID.toString())
         }.andExpect {

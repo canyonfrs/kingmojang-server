@@ -13,18 +13,16 @@ import io.mockk.every
 import io.mockk.just
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
-import org.springframework.test.web.servlet.delete
-import org.springframework.test.web.servlet.get
-import org.springframework.test.web.servlet.post
+import org.springframework.test.web.servlet.*
 import org.springframework.test.web.servlet.put
 
 @WebMvcTest(CommentController::class)
-class CommentControllerTest: RestControllerTest() {
+class CommentControllerTest : RestControllerTest() {
     @MockkBean
     private lateinit var commentService: CommentService
 
     @Test
-    @WithMockCustomUser(MemberType.USER)
+    @WithMockCustomUser(MEMBER_ID, MemberType.USER)
     fun `성공적으로 댓글을 등록한다`() {
         // given
         every { commentService.createComment(any(), MEMO_ID, any()) } returns COMMENT_ID
@@ -41,13 +39,13 @@ class CommentControllerTest: RestControllerTest() {
     }
 
     @Test
-    @WithMockCustomUser(MemberType.USER)
+    @WithMockCustomUser(type = MemberType.USER)
     fun `성공적으로 댓글을 수정한다`() {
         // given
         every { commentService.updateComment(any(), COMMENT_ID, any()) } returns COMMENT_ID
 
         // when
-        mockMvc.put("/api/v1/comments/$COMMENT_ID") {
+        mockMvc.patch("/api/v1/comments/$COMMENT_ID") {
             bearer(ACCESS_TOKEN)
             jsonContent(createCommentRequest())
         }.andExpect {
@@ -57,7 +55,7 @@ class CommentControllerTest: RestControllerTest() {
     }
 
     @Test
-    @WithMockCustomUser(MemberType.USER)
+    @WithMockCustomUser(type = MemberType.USER)
     fun `성공적으로 댓글을 삭제한다`() {
         // given
         every { commentService.deleteComment(any(), COMMENT_ID) } just Runs
@@ -75,12 +73,12 @@ class CommentControllerTest: RestControllerTest() {
     fun `성공적으로 선택된 메모의 댓글 목록을 조회한다`() {
         // given
         val response = createCommentsResponse()
-        every { commentService.readComments(MEMO_ID, any()) } returns response
+        every { commentService.readComments(MEMO_ID, null, any()) } returns response
 
         // when
         mockMvc.get("/api/v1/memos/$MEMO_ID/comments") {
             bearer(ACCESS_TOKEN)
-            jsonContent(createCommonPageRequest(20, 0))
+            jsonContent(createPageRequest())
         }.andExpect {
             status { isOk() }
             content { success(response) }

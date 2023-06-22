@@ -21,9 +21,9 @@ class FollowControllerTest : RestControllerTest() {
     private lateinit var followService: FollowService
 
     @Test
-    @WithMockCustomUser
+    @WithMockCustomUser(memberId = FOLLOWER_ID)
     fun `성공적으로 팔로우를 요청한다`() {
-        every { followService.createFollow(any(), FOLLOWER_ID, CREATOR_ID) } returns FOLLOW_ID
+        every { followService.createFollow(FOLLOWER_ID, CREATOR_ID) } returns FOLLOW_ID
 
         mockMvc.post("/api/v1/follows/$FOLLOWER_ID/to/$CREATOR_ID") {
             bearer(ACCESS_TOKEN)
@@ -34,9 +34,9 @@ class FollowControllerTest : RestControllerTest() {
     }
 
     @Test
-    @WithMockCustomUser
+    @WithMockCustomUser(memberId = FOLLOWER_ID)
     fun `성공적으로 팔로우를 취소한다`() {
-        every { followService.deleteFollow(any(), FOLLOWER_ID, CREATOR_ID) } just Runs
+        every { followService.deleteFollow(FOLLOWER_ID, CREATOR_ID) } just Runs
 
         mockMvc.delete("/api/v1/follows/$FOLLOWER_ID/to/$CREATOR_ID") {
             bearer(ACCESS_TOKEN)

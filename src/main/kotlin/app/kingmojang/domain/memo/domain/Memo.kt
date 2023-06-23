@@ -2,7 +2,6 @@ package app.kingmojang.domain.memo.domain
 
 import app.kingmojang.domain.SoftDeletable
 import app.kingmojang.domain.member.domain.Member
-import app.kingmojang.domain.member.domain.UserPrincipal
 import app.kingmojang.domain.memo.dto.request.MemoRequest
 import app.kingmojang.global.exception.common.NotWriterException
 import jakarta.persistence.*
@@ -95,7 +94,7 @@ class Memo(
         if (!isWriter(memberId)) {
             throw NotWriterException(memberId)
         }
-        this.delete()
+        this.changeToDelete()
     }
 
     private fun isWriter(memberId: Long) = this.writer.id == memberId

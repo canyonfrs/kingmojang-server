@@ -88,7 +88,7 @@ class Member(
     }
 
     fun withdraw() {
-        this.delete()
+        this.changeToDelete()
     }
 
     fun changePassword(passwordEncoder: PasswordEncoder, request: ChangePasswordRequest) {

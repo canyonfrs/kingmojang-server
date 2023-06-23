@@ -76,7 +76,7 @@ class Reply(
         if (!isWriter(memberId)) {
             throw NotWriterException(memberId)
         }
-        this.delete()
+        this.changeToDelete()
         this.comment.decreaseReplyCount()
     }
 

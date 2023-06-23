@@ -1,5 +1,6 @@
 package app.kingmojang.domain.highlight.domain
 
+import app.kingmojang.domain.highlight.dto.request.HighlightRequest
 import jakarta.persistence.*
 
 @Entity
@@ -13,18 +14,27 @@ class Highlight(
     @Column(columnDefinition = "mediumtext")
     val content: String,
 
-    @Column(name = "start_x")
-    val startX: Int,
+    @Column(name = "start_node")
+    val startNode: String,
 
-    @Column(name = "start_y")
-    val startY: Int,
+    @Column(name = "start_offset")
+    val startOffset: Int,
 
-    @Column(name = "end_x")
-    val endX: Int,
+    @Column(name = "end_node")
+    val endNode: String,
 
-    @Column(name = "end_y")
-    val endY: Int,
-
-    val version: Int,
+    @Column(name = "end_offset")
+    val endOffset: Int,
 ) {
+    companion object {
+        fun create(request: HighlightRequest): Highlight {
+            return Highlight(
+                content = request.content,
+                startNode = request.startNode,
+                startOffset = request.startOffset,
+                endNode = request.endNode,
+                endOffset = request.endOffset
+            )
+        }
+    }
 }

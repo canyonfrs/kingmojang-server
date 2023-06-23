@@ -7,9 +7,9 @@ import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface CommentRepository : JpaRepository<Comment, Long> {
-    @EntityGraph(attributePaths = ["member"])
+    @EntityGraph(attributePaths = ["member", "highlight"])
     fun findAllWithWriterByMemoIdAndDeletedFalse(memoId: Long, pageable: Pageable): Page<Comment>
 
-    @EntityGraph(attributePaths = ["member"])
+    @EntityGraph(attributePaths = ["member", "highlight"])
     fun findAllWithWriterByWriterIdAndDeletedFalse(memberId: Long, pageable: Pageable): Page<Comment>
 }

@@ -12,7 +12,7 @@ abstract class SoftDeletable(
     @Column(name = "deleted_at")
     var deletedAt: LocalDateTime? = null
 ) {
-    fun delete() {
+    fun changeToDelete() {
         this.deleted = true
         this.deletedAt = LocalDateTime.now()
     }

@@ -5,6 +5,8 @@ import app.kingmojang.domain.comment.dto.request.CommentRequest
 import app.kingmojang.domain.comment.dto.response.CommentsResponse
 import app.kingmojang.domain.comment.exception.NotFoundCommentException
 import app.kingmojang.domain.comment.repository.CommentRepository
+import app.kingmojang.domain.highlight.domain.Highlight
+import app.kingmojang.domain.highlight.repository.HighlightRepository
 import app.kingmojang.domain.like.domain.CommentLike
 import app.kingmojang.domain.like.exception.NotFoundCommentLikeException
 import app.kingmojang.domain.like.repository.CommentLikeRepository
@@ -25,12 +27,14 @@ class CommentService(
     private val memoRepository: MemoRepository,
     private val commentRepository: CommentRepository,
     private val commentLikeRepository: CommentLikeRepository,
+    private val highlightRepository: HighlightRepository
 ) {
 
     fun createComment(memoId: Long, memberId: Long, request: CommentRequest): Long {
         val writer = memberRepository.findByIdOrNull(memberId) ?: throw NotFoundMemberException(memberId)
         val memo = memoRepository.findByIdOrNull(memoId) ?: throw NotFoundMemoException(memoId)
-        return commentRepository.save(Comment.create(writer, memo, request)).id!!
+        val highlight = request.highlight?.let { highlightRepository.save(Highlight.create(it)) }
+        return commentRepository.save(Comment.create(writer, memo, highlight, request)).id!!
     }
 
     fun updateComment(commentId: Long, memberId: Long, request: CommentRequest): Long {

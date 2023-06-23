@@ -43,14 +43,14 @@ class Comment(
     var updatedAt: LocalDateTime,
 ) : SoftDeletable() {
     companion object {
-        fun create(writer: Member, memo: Memo, request: CommentRequest): Comment {
+        fun create(writer: Member, memo: Memo, highlight: Highlight?, request: CommentRequest): Comment {
             val now = LocalDateTime.now()
             memo.increaseCommentCount()
             return Comment(
                 writer = writer,
                 memo = memo,
                 content = request.content,
-                highlight = null,
+                highlight = highlight,
                 likeCount = 0,
                 replyCount = 0,
                 createdAt = now,
@@ -88,7 +88,7 @@ class Comment(
         if (!isWriter(memberId)) {
             throw NotWriterException(memberId)
         }
-        this.delete()
+        this.changeToDelete()
         this.memo.decreaseCommentCount()
     }
 

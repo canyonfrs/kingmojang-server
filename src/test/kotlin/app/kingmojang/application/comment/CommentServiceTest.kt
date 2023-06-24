@@ -2,6 +2,7 @@ package app.kingmojang.application.comment
 
 import app.kingmojang.domain.comment.application.CommentService
 import app.kingmojang.domain.comment.repository.CommentRepository
+import app.kingmojang.domain.highlight.repository.HighlightRepository
 import app.kingmojang.domain.like.repository.CommentLikeRepository
 import app.kingmojang.domain.member.repository.MemberRepository
 import app.kingmojang.domain.memo.repository.MemoRepository
@@ -16,12 +17,14 @@ class CommentServiceTest : BehaviorSpec({
     val memoRepository = mockk<MemoRepository>()
     val commentRepository = mockk<CommentRepository>()
     val commentLikeRepository = mockk<CommentLikeRepository>()
+    val highlightRepository = mockk<HighlightRepository>()
 
     val commentService = CommentService(
         memberRepository,
         memoRepository,
         commentRepository,
-        commentLikeRepository
+        commentLikeRepository,
+        highlightRepository
     )
 
     Given("정상적인 댓글 생성 요청이 있는 경우") {
@@ -30,7 +33,7 @@ class CommentServiceTest : BehaviorSpec({
         every { commentRepository.save(any()) } returns createComment()
 
         When("댓글을 생성하면") {
-            val actual = commentService.createComment(MEMO_ID, MEMBER_ID, createCommentRequest())
+            val actual = commentService.createComment(MEMO_ID, MEMBER_ID, createCommentRequest(highlightRequest = null))
             Then("댓글이 생성된다") {
                 actual shouldBe COMMENT_ID
             }

@@ -4,6 +4,8 @@ import app.kingmojang.domain.comment.domain.Comment
 import app.kingmojang.domain.comment.dto.request.CommentRequest
 import app.kingmojang.domain.comment.dto.response.CommentResponse
 import app.kingmojang.domain.comment.dto.response.CommentsResponse
+import app.kingmojang.domain.highlight.dto.request.HighlightRequest
+import app.kingmojang.domain.highlight.dto.response.HighlightResponse
 import app.kingmojang.domain.like.domain.CommentLike
 import app.kingmojang.domain.member.domain.Member
 import app.kingmojang.domain.memo.domain.Memo
@@ -24,11 +26,13 @@ val COMMENT_UPDATED_AT: LocalDateTime = LocalDateTime.of(2023, 5, 1, 12, 42, 52,
 
 fun createCommentRequest(
     content: String = COMMENT_CONTENT,
-    emojiId: Long = EMOJI_ID
+    emojiId: Long = EMOJI_ID,
+    highlightRequest: HighlightRequest? = createHighlightRequest()
 ): CommentRequest {
     return CommentRequest(
         content,
-        emojiId
+        emojiId,
+        highlightRequest
     )
 }
 
@@ -36,6 +40,7 @@ fun createCommentResponse(
     commentId: Long = COMMENT_ID,
     writer: String = COMMENT_WRITER,
     content: String = COMMENT_CONTENT,
+    highlightResponse: HighlightResponse? = createHighlightResponse(),
     likeCount: Int = COMMENT_LIKE_COUNT,
     replyCount: Int = REPLY_COUNT,
     isLike: Boolean = COMMENT_IS_LIKE,
@@ -47,6 +52,7 @@ fun createCommentResponse(
         commentId,
         writer,
         content,
+        highlightResponse,
         likeCount,
         replyCount,
         isLike,

@@ -23,47 +23,50 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 @Transactional
 class CommentService(
-    private val memberRepository: MemberRepository,
-    private val memoRepository: MemoRepository,
-    private val commentRepository: CommentRepository,
-    private val commentLikeRepository: CommentLikeRepository,
-    private val highlightRepository: HighlightRepository
+        private val memberRepository: MemberRepository,
+        private val memoRepository: MemoRepository,
+        private val commentRepository: CommentRepository,
+        private val commentLikeRepository: CommentLikeRepository,
+        private val highlightRepository: HighlightRepository
 ) {
 
     fun createComment(memoId: Long, memberId: Long, request: CommentRequest): Long {
         val writer = memberRepository.findByIdOrNull(memberId) ?: throw NotFoundMemberException(memberId)
-        val memo = memoRepository.findByIdOrNull(memoId) ?: throw NotFoundMemoException(memoId)
+        val memo = memoRepository.findMemoWithWriterByIdAndDeletedFalse(memoId) ?: throw NotFoundMemoException(memoId)
         val highlight = request.highlight?.let { highlightRepository.save(Highlight.create(it)) }
         return commentRepository.save(Comment.create(writer, memo, highlight, request)).id!!
     }
 
     fun updateComment(commentId: Long, memberId: Long, request: CommentRequest): Long {
-        val comment = commentRepository.findByIdOrNull(commentId) ?: throw NotFoundCommentException(commentId)
+        val comment = commentRepository.findCommentWithWriterByIdAndDeletedFalse(commentId)
+                ?: throw NotFoundCommentException(commentId)
         return comment.update(memberId, request).id!!
     }
 
     fun deleteComment(commentId: Long, memberId: Long) {
-        val comment = commentRepository.findByIdOrNull(commentId) ?: throw NotFoundCommentException(commentId)
-        commentLikeRepository.deleteAllByIdInBatch(commentLikeRepository.findAllByCommentId(commentId))
+        val comment = commentRepository.findCommentWithWriterByIdAndDeletedFalse(commentId)
+                ?: throw NotFoundCommentException(commentId)
+        commentLikeRepository.deleteAllInBatch(commentLikeRepository.findAllByCommentId(commentId))
         comment.remove(memberId)
     }
 
     @Transactional(readOnly = true)
     fun readComments(memoId: Long, memberId: Long?, request: PageRequest): CommentsResponse {
-        val comments = commentRepository.findAllWithWriterByMemoIdAndDeletedFalse(memoId, request)
+        val comments = commentRepository.findAllWithWriterByMemoIdAndMemoDeletedFalseAndDeletedFalse(memoId, request)
         val commentLikes = if (memberId != null) extractCommentsLike(comments, memberId) else emptyMap()
         return CommentsResponse.of(comments, commentLikes)
     }
 
     fun increaseCommentLikeCount(commentId: Long, memberId: Long): Long {
         val member = memberRepository.findByIdOrNull(memberId) ?: throw NotFoundMemberException(memberId)
-        val comment = commentRepository.findByIdOrNull(commentId) ?: throw NotFoundCommentException(commentId)
+        val comment = commentRepository.findCommentWithWriterByIdAndDeletedFalse(commentId)
+                ?: throw NotFoundCommentException(commentId)
         return commentLikeRepository.save(CommentLike.create(member, comment)).id!!
     }
 
     fun decreaseCommentLikeCount(commentId: Long, memberId: Long) {
         val commentLike = commentLikeRepository.findByCommentIdAndMemberId(commentId, memberId)
-            ?: throw NotFoundCommentLikeException(commentId, memberId)
+                ?: throw NotFoundCommentLikeException(commentId, memberId)
         commentLike.remove()
         commentLikeRepository.delete(commentLike)
     }
@@ -77,6 +80,6 @@ class CommentService(
     private fun extractCommentsLike(comments: Slice<Comment>, memberId: Long): Map<Long, CommentLike> {
         val commentIds = comments.content.map { it.id!! }
         return commentLikeRepository.findAllByCommentIdInAndMemberId(commentIds, memberId)
-            .associateBy { it.id!! }
+                .associateBy { it.id!! }
     }
 }

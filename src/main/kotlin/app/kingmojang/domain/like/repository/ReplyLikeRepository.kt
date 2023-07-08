@@ -8,7 +8,7 @@ interface ReplyLikeRepository : JpaRepository<ReplyLike, Long> {
     @EntityGraph(attributePaths = ["reply"])
     fun findByReplyIdAndMemberId(replyId: Long, memberId: Long): ReplyLike?
 
-    fun findAllByReplyId(replyId: Long): List<Long>
+    fun findAllByReplyId(replyId: Long): List<ReplyLike>
 
     @EntityGraph(attributePaths = ["member"])
     fun findAllByReplyIdInAndMemberId(replyIds: List<Long>, memberId: Long): List<ReplyLike>

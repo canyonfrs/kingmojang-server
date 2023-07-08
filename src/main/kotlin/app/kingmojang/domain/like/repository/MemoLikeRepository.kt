@@ -10,7 +10,7 @@ interface MemoLikeRepository : JpaRepository<MemoLike, Long> {
 
     fun existsByMemoIdAndMemberId(memoId: Long, memberId: Long): Boolean
 
-    fun findAllByMemoId(memoId: Long): List<Long>
+    fun findAllByMemoId(memoId: Long): List<MemoLike>
 
     @EntityGraph(attributePaths = ["member"])
     fun findAllByMemoIdInAndMemberId(memoIds: List<Long>, memberId: Long): List<MemoLike>

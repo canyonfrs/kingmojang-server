@@ -52,7 +52,7 @@ class MemoService(
         val memoLike = if (memberId != null) memoLikeRepository.existsByMemoIdAndMemberId(memoId, memberId) else false
         val isFollow =
             if (memberId != null) followRepository.existsByCreatorIdAndFollowerId(memo.writer.id!!, memberId) else false
-        val comments = commentRepository.findAllWithWriterByMemoIdAndDeletedFalse(memoId, request)
+        val comments = commentRepository.findAllWithWriterByMemoIdAndMemoDeletedFalseAndDeletedFalse(memoId, request)
         val commentLikes = if (memberId != null) extractCommentsLike(comments, memberId) else emptyMap()
         return MemoResponse.of(memo, memoLike, isFollow, CommentsResponse.of(comments, commentLikes))
     }
@@ -61,7 +61,7 @@ class MemoService(
     fun deleteMemo(memoId: Long, memberId: Long) {
         val memo = memoRepository.findByIdOrNull(memoId) ?: throw NotFoundMemoException(memoId)
         memo.remove(memberId)
-        memoLikeRepository.deleteAllByIdInBatch(memoLikeRepository.findAllByMemoId(memoId))
+        memoLikeRepository.deleteAllInBatch(memoLikeRepository.findAllByMemoId(memoId))
     }
 
     @Transactional(readOnly = true)
@@ -102,7 +102,7 @@ class MemoService(
 
     @Transactional
     fun increaseMemoLikeCount(memoId: Long, memberId: Long): Long {
-        val memo = memoRepository.findByIdOrNull(memoId) ?: throw NotFoundMemoException(memoId)
+        val memo = memoRepository.findMemoWithWriterByIdAndDeletedFalse(memoId) ?: throw NotFoundMemoException(memoId)
         val member = memberRepository.findByIdOrNull(memberId) ?: throw NotFoundMemberException(memberId)
         return memoLikeRepository.save(MemoLike.create(member, memo)).id!!
     }

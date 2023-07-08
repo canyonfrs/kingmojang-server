@@ -85,7 +85,7 @@ class MemoController(
         return ResponseEntity.ok(CommonResponse.success(memos))
     }
 
-    @GetMapping("/memos/")
+    @GetMapping("/memos/subscriptions")
     fun readMemosInSubscribe(
         @AuthenticationPrincipal userPrincipal: UserPrincipal,
         @RequestParam(defaultValue = "0") page: Int,

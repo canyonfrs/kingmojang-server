@@ -7,9 +7,12 @@ import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface ReplyRepository : JpaRepository<Reply, Long> {
-    @EntityGraph(attributePaths = ["member"])
+    @EntityGraph(attributePaths = ["writer"])
+    fun findReplyWithWriterByIdAndDeletedFalse(replyId: Long): Reply?
+
+    @EntityGraph(attributePaths = ["writer"])
     fun findAllWithWriterByCommentIdAndDeletedFalse(commendId: Long, pageable: Pageable): Page<Reply>
 
-    @EntityGraph(attributePaths = ["member"])
+    @EntityGraph(attributePaths = ["writer"])
     fun findAllWithWriterByWriterIdAndDeletedFalse(memberId: Long, pageable: Pageable): Page<Reply>
 }

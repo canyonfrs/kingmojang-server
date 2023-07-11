@@ -6,7 +6,6 @@ import app.kingmojang.global.exception.CommonException
 import app.kingmojang.global.exception.ErrorCodes
 import app.kingmojang.global.exception.common.InvalidInputException
 import mu.KotlinLogging
-import org.springframework.http.HttpStatusCode
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.validation.BindException

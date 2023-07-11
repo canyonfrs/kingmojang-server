@@ -1,15 +1,12 @@
 package app.kingmojang.domain.follow.application
 
 import app.kingmojang.domain.follow.domain.Follow
-import app.kingmojang.domain.follow.dto.response.FollowResponse
 import app.kingmojang.domain.follow.dto.response.FollowsResponse
 import app.kingmojang.domain.follow.exception.FollowAlreadyExistException
 import app.kingmojang.domain.follow.exception.NotFoundFollowException
 import app.kingmojang.domain.follow.repository.FollowRepository
-import app.kingmojang.domain.member.domain.UserPrincipal
 import app.kingmojang.domain.member.exception.NotFoundMemberException
 import app.kingmojang.domain.member.repository.MemberRepository
-import app.kingmojang.global.common.request.CommonPageRequest
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.data.repository.findByIdOrNull

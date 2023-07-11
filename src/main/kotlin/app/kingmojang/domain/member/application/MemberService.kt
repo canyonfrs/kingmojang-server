@@ -7,7 +7,6 @@ import app.kingmojang.domain.member.dto.response.ChangeProfileImageResponse
 import app.kingmojang.domain.member.exception.NotFoundMemberException
 import app.kingmojang.domain.member.exception.SameNicknameAlreadyExistException
 import app.kingmojang.domain.member.repository.MemberRepository
-import app.kingmojang.global.exception.common.FileTypeException
 import app.kingmojang.global.exception.common.InvalidInputException
 import app.kingmojang.global.util.S3Utils
 import org.springframework.data.repository.findByIdOrNull
@@ -15,7 +14,6 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
-import java.util.*
 
 @Service
 @Transactional

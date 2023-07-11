@@ -3,7 +3,6 @@ package app.kingmojang.domain.comment.dto.request
 import app.kingmojang.domain.highlight.dto.request.HighlightRequest
 import com.fasterxml.jackson.annotation.JsonInclude
 import jakarta.validation.constraints.NotBlank
-import jakarta.validation.constraints.NotNull
 
 data class CommentRequest(
     @field:NotBlank val content: String,

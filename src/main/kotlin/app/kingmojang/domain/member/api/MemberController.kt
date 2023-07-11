@@ -6,9 +6,7 @@ import app.kingmojang.domain.member.dto.request.ChangeNicknameRequest
 import app.kingmojang.domain.member.dto.request.ChangePasswordRequest
 import app.kingmojang.domain.member.dto.response.ChangeProfileImageResponse
 import app.kingmojang.domain.memo.application.MemoService
-import app.kingmojang.domain.memo.dto.response.MemosResponse
 import app.kingmojang.global.common.response.CommonResponse
-import org.springframework.data.domain.PageRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize

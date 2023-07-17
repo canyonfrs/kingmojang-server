@@ -58,7 +58,7 @@ class MemoServiceTest : BehaviorSpec({
         val request = PageRequest.of(0, 10)
         every { memoRepository.findMemoWithWriterByIdAndDeletedFalse(MEMO_ID) } returns createMemo()
         every {
-            commentRepository.findAllWithWriterByMemoIdAndDeletedFalse(
+            commentRepository.findAllWithWriterByMemoIdAndMemoDeletedFalseAndDeletedFalse(
                 MEMO_ID,
                 request
             )
@@ -76,7 +76,7 @@ class MemoServiceTest : BehaviorSpec({
         val request = PageRequest.of(0, 10)
         every { memoRepository.findMemoWithWriterByIdAndDeletedFalse(MEMO_ID) } returns createMemo()
         every {
-            commentRepository.findAllWithWriterByMemoIdAndDeletedFalse(MEMO_ID, request)
+            commentRepository.findAllWithWriterByMemoIdAndMemoDeletedFalseAndDeletedFalse(MEMO_ID, request)
         } returns createCommentPages()
 
         When("비로그인 유저가 메모를 조회하면") {

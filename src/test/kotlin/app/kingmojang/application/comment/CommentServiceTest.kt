@@ -29,7 +29,7 @@ class CommentServiceTest : BehaviorSpec({
 
     Given("정상적인 댓글 생성 요청이 있는 경우") {
         every { memberRepository.findByIdOrNull(MEMBER_ID) } returns createMember()
-        every { memoRepository.findByIdOrNull(MEMO_ID) } returns createMemo()
+        every { memoRepository.findMemoWithWriterByIdAndDeletedFalse(MEMO_ID) } returns createMemo()
         every { commentRepository.save(any()) } returns createComment()
 
         When("댓글을 생성하면") {
@@ -41,7 +41,7 @@ class CommentServiceTest : BehaviorSpec({
     }
 
     Given("정상적인 댓글 수정 요청이 있는 경우") {
-        every { commentRepository.findByIdOrNull(COMMENT_ID) } returns createComment()
+        every { commentRepository.findCommentWithWriterByIdAndDeletedFalse(COMMENT_ID) } returns createComment()
 
         When("댓글을 수정하면") {
             val actual = commentService.updateComment(COMMENT_ID, MEMBER_ID, createCommentRequest())
@@ -54,8 +54,8 @@ class CommentServiceTest : BehaviorSpec({
     Given("정상적인 댓글 삭제 요청이 있는 경우") {
         val comment = createComment()
         every { commentRepository.findByIdOrNull(COMMENT_ID) } returns comment
-        every { commentLikeRepository.findAllByCommentId(COMMENT_ID) } returns listOf(COMMENT_LIKE_ID)
-        every { commentLikeRepository.deleteAllByIdInBatch(any()) } just Runs
+        every { commentLikeRepository.findAllByCommentId(COMMENT_ID) } returns listOf(createCommentLike())
+        every { commentLikeRepository.deleteAllInBatch(any()) } just Runs
         every { commentRepository.delete(comment) } just Runs
 
         When("댓글을 삭제하면") {
@@ -68,7 +68,7 @@ class CommentServiceTest : BehaviorSpec({
 
     Given("정상적인 메모의 댓글목록 조회 요청이 있는 경우") {
         every {
-            commentRepository.findAllWithWriterByMemoIdAndDeletedFalse(MEMO_ID, createPageRequest())
+            commentRepository.findAllWithWriterByMemoIdAndMemoDeletedFalseAndDeletedFalse(MEMO_ID, createPageRequest())
         } returns createCommentPages()
 
 
@@ -81,8 +81,8 @@ class CommentServiceTest : BehaviorSpec({
     }
 
     Given("정상적인 댓글 좋아요 요청이 있는 경우") {
-        every { commentRepository.findByIdOrNull(COMMENT_ID) } returns createComment()
         every { memberRepository.findByIdOrNull(MEMBER_ID) } returns createMember()
+        every { commentRepository.findCommentWithWriterByIdAndDeletedFalse(COMMENT_ID) } returns createComment()
         every { commentLikeRepository.save(any()) } returns createCommentLike()
 
         When("댓글 좋아요를 하면") {

@@ -4,7 +4,6 @@ import app.kingmojang.domain.highlight.domain.Highlight
 import app.kingmojang.domain.highlight.dto.request.HighlightRequest
 import app.kingmojang.domain.highlight.dto.response.HighlightResponse
 
-
 const val HIGHLIGHT_ID = 1L
 const val HIGHLIGHT_CONTENT = "하이라이트 내용"
 const val START_NODE = "startNodeName"

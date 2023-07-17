@@ -29,8 +29,8 @@ class ReplyServiceTest : BehaviorSpec({
 
     Given("정상적인 답글 생성 요청이 있는 경우") {
         every { memberRepository.findByIdOrNull(MEMBER_ID) } returns createMember()
-        every { memoRepository.findByIdOrNull(MEMO_ID) } returns createMemo()
-        every { commentRepository.findByIdOrNull(COMMENT_ID) } returns createComment()
+        every { memoRepository.findMemoWithWriterByIdAndDeletedFalse(MEMO_ID) } returns createMemo()
+        every { commentRepository.findCommentWithWriterByIdAndDeletedFalse(COMMENT_ID) } returns createComment()
         every { replyRepository.save(any()) } returns createReply()
 
         When("답글을 생성하면") {
@@ -42,7 +42,7 @@ class ReplyServiceTest : BehaviorSpec({
     }
 
     Given("정상적인 답글 수정 요청이 있는 경우") {
-        every { replyRepository.findByIdOrNull(REPLY_ID) } returns createReply()
+        every { replyRepository.findReplyWithWriterByIdAndDeletedFalse(REPLY_ID) } returns createReply()
 
         When("답글을 수정하면") {
             val actual = replyService.updateReply(REPLY_ID, MEMBER_ID, createReplyRequest())
@@ -54,9 +54,9 @@ class ReplyServiceTest : BehaviorSpec({
 
     Given("정상적인 답글 삭제 요청이 있는 경우") {
         val reply = createReply()
-        every { replyRepository.findByIdOrNull(REPLY_ID) } returns reply
-        every { replyLikeRepository.findAllByReplyId(REPLY_ID) } returns listOf(REPLY_LIKE_ID)
-        every { replyLikeRepository.deleteAllByIdInBatch(any()) } just Runs
+        every { replyRepository.findReplyWithWriterByIdAndDeletedFalse(REPLY_ID) } returns reply
+        every { replyLikeRepository.findAllByReplyId(REPLY_ID) } returns listOf(createReplyLike())
+        every { replyLikeRepository.deleteAllInBatch(any()) } just Runs
         every { replyRepository.delete(reply) } just Runs
 
         When("댓글을 삭제하면") {
@@ -69,8 +69,8 @@ class ReplyServiceTest : BehaviorSpec({
 
 
     Given("정상적인 답글 좋아요 요청이 있는 경우") {
-        every { replyRepository.findByIdOrNull(REPLY_ID) } returns createReply()
         every { memberRepository.findByIdOrNull(MEMBER_ID) } returns createMember()
+        every { replyRepository.findReplyWithWriterByIdAndDeletedFalse(REPLY_ID) } returns createReply()
         every { replyLikeRepository.save(any()) } returns createReplyLike()
 
         When("답글 좋아요를 하면") {

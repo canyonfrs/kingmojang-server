@@ -31,7 +31,7 @@ class MemoControllerTest : RestControllerTest() {
             jsonContent(createMemoRequest())
         }.andExpect {
             status { isCreated() }
-            content { success() }
+            content { success(MEMO_ID) }
         }
     }
 

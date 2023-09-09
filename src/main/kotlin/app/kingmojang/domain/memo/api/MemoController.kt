@@ -26,7 +26,7 @@ class MemoController(
     fun createMemo(
         @AuthenticationPrincipal userPrincipal: UserPrincipal,
         @RequestBody @Valid request: MemoRequest,
-    ): ResponseEntity<CommonResponse<Void>> {
+    ): ResponseEntity<CommonResponse<Long>> {
         val memberId = userPrincipal.getId()
         val memoId = memoService.createMemo(memberId, request)
 
@@ -34,7 +34,7 @@ class MemoController(
             .fromCurrentContextPath().path("/memos/{id}")
             .buildAndExpand(memoId).toUri()
 
-        return ResponseEntity.created(uri).body(CommonResponse.success())
+        return ResponseEntity.created(uri).body(CommonResponse.success(memoId))
     }
 
     @PatchMapping("/memos/{id}")
